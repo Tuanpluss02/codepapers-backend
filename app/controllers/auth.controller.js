@@ -1,6 +1,8 @@
+
 exports.auth = {
     login: (req, res) => {
-        res.send('login ok');
+        const { email, password } = req.body;
+
     },
     register: (req, res) => {
         res.send('register ok');
