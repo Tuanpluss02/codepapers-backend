@@ -1,4 +1,3 @@
-const data = require('./data.json');
 const fs = require('fs');
 
 const query = require('../app/modules/user.query.js');

@@ -1,6 +1,6 @@
 const { validator } = require('../utils/validator');
 const query = require('../modules/user.query');
-const { comparePassword, generateToken } = require('../services/auth.service.js');
+const { generateToken } = require('../services/auth.service.js');
 const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
 
 // Middleware kiểm tra body request
