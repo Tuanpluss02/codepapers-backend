@@ -15,10 +15,11 @@ class HTTPStatusCode {
     /*
     The request succeeded.The result meaning of "success" depends on the HTTP method:
     GET: The resource has been fetched and transmitted in the message body.
-        HEAD: The representation headers are included in the response without any message body.
+    HEAD: The representation headers are included in the response without any message body.
     PUT or POST: The resource describing the result of the action is transmitted in the message body.
-        TRACE: The message body contains the request message as received by the server.
+    TRACE: The message body contains the request message as received by the server.
     */
+
     Created = 201
     // The request succeeded, and a new resource was created as a result.This is typically the response sent after POST requests, or some PUT requests.
 

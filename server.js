@@ -41,8 +41,7 @@ const swaggerFile = require('./swagger_output.json');
 //     swaggerUi.setup(specs)
 // );
 
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());

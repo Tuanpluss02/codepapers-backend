@@ -1,5 +1,4 @@
 const fs = require('fs');
-
 const query = require('../app/modules/user.query.js');
 
 const jsonData = fs.readFileSync('E:\\CODE\\NodeJS\\codepapers\\testing\\data.json');
@@ -19,3 +18,5 @@ dataMock.forEach((item) => async () => {
         console.error(error);
     }
 });
+
+

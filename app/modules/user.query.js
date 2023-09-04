@@ -40,6 +40,22 @@ exports.getUsers = async email => {
     }
 };
 
+exports.getUserById = async id => {
+    const sql = 'SELECT * FROM users WHERE id = ? LIMIT 1';
+    const values = [id];
+    const result = await new Promise((resolve, reject) => {
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error(err);
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
+    });
+    return result[0];
+}
+
 exports.createUser = async (name, email, password, profileAvatar, dateOfBirth) => {
     const sql = 'INSERT INTO users (fullName, email, password, profileAvatar, dateOfBirth) VALUES (?, ?, ?, ?, ?)';
     const values = [name, email, password, profileAvatar, dateOfBirth];

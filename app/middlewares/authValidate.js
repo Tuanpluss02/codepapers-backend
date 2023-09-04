@@ -1,29 +1,7 @@
-const { validator } = require('../utils/validator');
 const query = require('../modules/user.query');
-const { generateToken } = require('../services/auth.service.js');
+const { generateToken, verifyToken } = require('../services/auth.service.js');
 const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
 
-// Middleware kiểm tra body request
-exports.validateReqBody = (req, res, next) => {
-    const { email, password, name } = req.body;
-    req.body.email = email ? email.toLowerCase() : email;
-    if (email && !validator.isValidEmail(email)) {
-        return res.status(HTTPStatusCode.BadRequest).json({
-            message: 'Invalid email'
-        });
-    }
-    if (password && !validator.isValidPassword(password)) {
-        return res.status(HTTPStatusCode.BadRequest).json({
-            message: 'Password must be at least 8 characters, including 1 uppercase letter, 1 lowercase letter and 1 number'
-        });
-    }
-    if (name && !validator.isValidName(name)) {
-        return res.status(HTTPStatusCode.BadRequest).json({
-            message: 'Invalid name'
-        });
-    }
-    return next();
-}
 // Middleware xác thực mật khẩu
 exports.authenticatePassword = async (req, res, next) => {
     const email = req.body.email.toLowerCase();
@@ -43,27 +21,54 @@ exports.authenticatePassword = async (req, res, next) => {
 // Middleware tạo access token và refresh token
 exports.generateTokens = async (req, res, next) => {
     const user = req.user;
-    const payload = {
+    const payloadAccessToken = {
         id: user.id,
         exp: Math.floor(Date.now() / 1000) + parseInt(process.env.ACCESS_TOKEN_LIFE)
     };
-
-    const accessToken = generateToken(payload, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_LIFE);
+    const payloadRefreshToken = {
+        id: user.id,
+        exp: Math.floor(Date.now() / 1000) + parseInt(process.env.REFRESH_TOKEN_LIFE)
+    };
+    const accessToken = generateToken(payloadAccessToken, process.env.ACCESS_TOKEN_SECRET);
     if (!accessToken) {
         return res.status(HTTPStatusCode.Unauthorized).send('Login failed, please try again');
     }
 
-    let refreshToken = generateToken(payload, process.env.REFRESH_TOKEN_SECRET, process.env.REFRESH_TOKEN_LIFE);
+    let refreshToken = generateToken(payloadRefreshToken, process.env.REFRESH_TOKEN_SECRET);
     if (!user.refreshToken) {
         await query.updateRefreshToken(user.id, refreshToken).catch(err => {
             console.error(err);
             return res.status(HTTPStatusCode.Unauthorized).send('Login failed, please try again');
         });
     } else {
+        // const jwtPayload = await verifyToken(user.refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        // if (!jwtPayload) {
+        //     return res.status(HTTPStatusCode.Unauthorized).send('Login failed, please try again');
+        // }
         refreshToken = user.refreshToken;
     }
 
     req.accessToken = accessToken;
     req.refreshToken = refreshToken;
+    next();
+}
+
+// Middleware kiểm tra refresh token
+exports.authenticateRefreshToken = async (req, res, next) => {
+    const refreshToken = req.body.refreshToken;
+    let payload;
+    try {
+        payload = verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+        return res.status(HTTPStatusCode.Unauthorized).send('Refresh token expired, please login again');
+    }
+    if (!payload) {
+        return res.status(HTTPStatusCode.Unauthorized).send('Invalid refresh token');
+    }
+    const dataQuery = await query.getUsers(payload.id);
+    if (dataQuery.length === 0 || dataQuery.data[0].refreshToken !== refreshToken) {
+        return res.status(HTTPStatusCode.Unauthorized).send('Invalid refresh token');
+    }
+    req.user = dataQuery.data[0];
     next();
 }
