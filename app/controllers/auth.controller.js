@@ -59,7 +59,11 @@ exports.auth = {
             'accessToken': accessToken
         });
     },
-    logout: (req, res) => {
-        res.send('logout ok');
+    logout: async (req, res) => {
+        const id = req.body.id;
+        await query.updateRefreshToken(id, null).catch(err => {
+            console.error(err);
+            res.status(401).send('Logout failed, please try again');
+        });
     }
 };
