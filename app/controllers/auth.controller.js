@@ -46,5 +46,8 @@ exports.auth = {
             console.error(err);
             res.status(HTTPStatusCode.Unauthorized).send('Logout failed, please try again');
         });
+        res.status(HTTPStatusCode.OK).json({
+            'message': 'Logout successful'
+        });
     }
 };

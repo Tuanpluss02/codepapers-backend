@@ -9,8 +9,8 @@ const hashPassword = (password) => {
     return bcrypt.hashSync(password, 10);
 }
 
-const generateToken = (payload, secretKey, expiresIn) => {
-    return jwt.sign(payload, secretKey, { expiresIn });
+const generateToken = (payload, secretKey) => {
+    return jwt.sign(payload, secretKey);
 }
 
 const verifyToken = (token, secretKey) => {

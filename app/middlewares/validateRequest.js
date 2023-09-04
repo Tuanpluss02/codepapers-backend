@@ -45,6 +45,7 @@ exports.generateTokens = async (req, res, next) => {
     const user = req.user;
     const payload = {
         id: user.id,
+        exp: Math.floor(Date.now() / 1000) + parseInt(process.env.ACCESS_TOKEN_LIFE)
     };
 
     const accessToken = generateToken(payload, process.env.ACCESS_TOKEN_SECRET, process.env.ACCESS_TOKEN_LIFE);
