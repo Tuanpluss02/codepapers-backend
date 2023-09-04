@@ -10,5 +10,6 @@ const conn = db.createConnection({
 
 conn.connect((err) => {
     if (err) throw err;
+    console.log(`Connected to database: ${process.env.DB_NAME}`);
 });
 module.exports = conn;
