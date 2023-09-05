@@ -1,3 +1,4 @@
+USE social;
 
 drop table if exists users, posts; 
 
@@ -5,9 +6,9 @@ create table users
 (
     id             int auto_increment
         primary key,
+    fullName      varchar(255) not null,
     email          varchar(255) not null,
     password       varchar(255) not null,
-    fullName      varchar(255) not null,
     profileAvatar varchar(255) null,
     dateOfBirth  date         null
 );
