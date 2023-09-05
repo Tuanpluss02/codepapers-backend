@@ -3,7 +3,6 @@ const query = require("../modules/user.query.js");
 const db = require("../services/database.service.js");
 const authServices = require("../services/auth.service.js");
 const { v4: uuidv4 } = require("uuid");
-const { generateToken, verifyToken } = require("../services/auth.service.js");
 require("dotenv").config();
 
 exports.auth = {
@@ -20,8 +19,10 @@ exports.auth = {
   },
   register: (req, res) => {
     const email = req.body.email;
-    const password = req.body.password;
     const name = req.body.name;
+    const password = req.body.password;
+    const profileAvatar = req.body.profileAvatar;
+    const dateOfBirth = req.body.dateOfBirth;
     db.query(
       "SELECT * FROM users WHERE email = ?;",
       [email],
@@ -44,8 +45,8 @@ exports.auth = {
             name,
             email,
             hashedPassword,
-            "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/561.jpg",
-            "1955-02-16",
+            profileAvatar,
+            dateOfBirth,
           ],
           (err, result) => {
             if (err) {
@@ -75,13 +76,19 @@ exports.auth = {
   },
   refresh: (req, res) => {
     const refreshToken = req.body.refreshToken;
-    const payload = verifyToken(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const payload = authServices.verifyToken(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
     if (!payload) {
       return res
         .status(HTTPStatusCode.Unauthorized)
         .send("Invalid refresh token");
     }
-    const accessToken = generateToken(payload, process.env.ACCESS_TOKEN_SECRET);
+    const accessToken = authServices.generateToken(
+      payload,
+      process.env.ACCESS_TOKEN_SECRET
+    );
     if (!accessToken) {
       return res
         .status(HTTPStatusCode.Unauthorized)
