@@ -43,7 +43,12 @@ exports.auth = {
         });
       }
       const accessToken = authServices.generateToken(
-        { _id: uuidv4() },
+        {
+          id: uuidv4(),
+          exp:
+            Math.floor(Date.now() / 1000) +
+            parseInt(process.env.REFRESH_TOKEN_LIFE),
+        },
         process.env.ACCESS_TOKEN_SECRET
       );
       return res.status(HTTPStatusCode.OK).json({
