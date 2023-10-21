@@ -4,7 +4,7 @@ const authServices = require("../services/auth.service.js");
 const nodeMailer = require("nodemailer");
 const transporter = nodeMailer.createTransport({
   service: "hotmail",
-  host: "smtp-mail.outlook.com",
+  host: process.env.HOST_RS,
   port: 587,
   auth: {
     user: process.env.EMAIL_RS,
