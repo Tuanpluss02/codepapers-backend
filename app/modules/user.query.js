@@ -57,7 +57,7 @@ exports.getUserById = async id => {
 }
 
 exports.createUser = async (name, email, password, profileAvatar, dateOfBirth) => {
-    const sql = 'INSERT INTO users (fullName, email, password, profileAvatar, dateOfBirth) VALUES (?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO users (full_name, email, password, profile_avatar, date_of_birth) VALUES (?, ?, ?, ?, ?)';
     const values = [name, email, password, profileAvatar, dateOfBirth];
     return new Promise((resolve, reject) => {
         db.query(sql, values, (err, result) => {
