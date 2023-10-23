@@ -55,12 +55,7 @@ exports.auth = {
         });
       }
       const accessToken = authServices.generateToken(
-        {
-          id: uuidv4(),
-          exp:
-            Math.floor(Date.now() / 1000) +
-            parseInt(process.env.REFRESH_TOKEN_LIFE),
-        },
+        { _id: uuidv4() },
         process.env.ACCESS_TOKEN_SECRET
       );
       return res.status(HTTPStatusCode.OK).json({

@@ -57,7 +57,9 @@
                 "name": {
                   "example": "any"
                 },
-                "profileAvatar": {},
+                "profileAvatar": {
+                  "example": "any"
+                },
                 "dateOfBirth": {
                   "example": "any"
                 }

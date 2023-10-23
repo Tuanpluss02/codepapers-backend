@@ -107,8 +107,8 @@ create table if not exists users
     password               varchar(255) not null,
     profile_avatar         varchar(255) not null,
     date_of_birth          date         not null,
-    reset_password_expires datetime     null,
-    reset_password_token   varchar(255) null
+    reset_password_expires time         not null,
+    reset_password_token   varchar(255) not null
 );
 
 alter table users
@@ -146,4 +146,3 @@ alter table users
 alter table users
     add constraint user_id_UNIQUE
         unique (user_id);
-
