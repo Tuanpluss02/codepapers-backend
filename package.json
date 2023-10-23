@@ -4,7 +4,7 @@
   "description": "Backend for CodePapers",
   "main": "server.js",
   "scripts": {
-    "run": "nodemon server.js",
+    "start": "nodemon server.js",
     "swagger-autogen": "node swagger.js"
   },
   "keywords": [],
@@ -17,6 +17,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.6.0",
+    "nodemailer": "^6.9.6",
     "swagger-autogen": "^2.23.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

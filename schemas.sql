@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 use codepapers;
 create table if not exists comments
 (
@@ -10,9 +9,6 @@ create table if not exists comments
 alter table comments
     add constraint `PRIMARY`
         primary key (comment_id);
-=======
-USE social;
->>>>>>> Register
 
 alter table comments
     add constraint comment_id_UNIQUE
@@ -20,18 +16,8 @@ alter table comments
 
 create table if not exists follower
 (
-<<<<<<< HEAD
     follower_id varchar(20) not null,
     followed_id varchar(20) not null
-=======
-    id             int auto_increment
-        primary key,
-    fullName      varchar(255) not null,
-    email          varchar(255) not null,
-    password       varchar(255) not null,
-    profileAvatar varchar(255) null,
-    dateOfBirth  date         null
->>>>>>> Register
 );
 
 alter table follower
@@ -160,4 +146,3 @@ alter table users
 alter table users
     add constraint user_id_UNIQUE
         unique (user_id);
-

@@ -57,13 +57,9 @@
                 "name": {
                   "example": "any"
                 },
-<<<<<<< HEAD
-                "profileAvatar": {},
-=======
                 "profileAvatar": {
                   "example": "any"
                 },
->>>>>>> Register
                 "dateOfBirth": {
                   "example": "any"
                 }
