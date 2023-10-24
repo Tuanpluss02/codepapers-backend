@@ -8,9 +8,8 @@ const authRouter = require('./app/routes/auth.route');
 const swaggerFile = require('./swagger_output.json');
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(cors());
 
 
