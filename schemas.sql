@@ -1,3 +1,10 @@
+create table if not exists blacklist_token
+(
+    refresh_token varchar(255) null,
+    user_id       varchar(50)  not null,
+    access_token  varchar(255) null
+);
+
 create table if not exists comments
 (
     comment_id varchar(20) not null,
@@ -106,13 +113,18 @@ create table if not exists users
     password               varchar(255) not null,
     profile_avatar         varchar(255) not null,
     date_of_birth          date         not null,
-    reset_password_expires datetime         null,
-    reset_password_token   varchar(255) null
+    reset_password_expires datetime     null,
+    reset_password_token   varchar(255) null,
+    refresh_token          varchar(255) null
 );
 
 alter table users
     add constraint `PRIMARY`
         primary key (user_id);
+
+alter table blacklist_token
+    add constraint blacklist_token_users_user_id_fk
+        foreign key (user_id) references users (user_id);
 
 alter table follower
     add constraint follower_users_user_id_fk

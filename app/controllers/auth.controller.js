@@ -115,7 +115,8 @@ exports.auth = {
 
   logout: async (req, res) => {
     try {
-      const id = getPayloadFromToken(req.headers.authorization.split(" ")[1], process.env.ACCESS_TOKEN_SECRET)._id;
+      const access_token = req.headers.authorization.split(" ")[1];
+      const id = getPayloadFromToken(access_token, process.env.ACCESS_TOKEN_SECRET)._id;
       console.log(id);
       const user = await query.getUserById(id);
       if (!user) {
@@ -128,6 +129,11 @@ exports.auth = {
           .status(HTTPStatusCode.Unauthorized)
           .send("User is not logged in");
       }
+      await query.updateBlacklistToken(
+        user.user_id,
+        access_token,
+        user.refresh_token
+      )
       await query.updateRefreshToken(id, null);
       return res.status(HTTPStatusCode.OK).json({
         message: "Logout successful",
