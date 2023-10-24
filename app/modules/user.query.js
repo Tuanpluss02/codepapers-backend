@@ -41,7 +41,7 @@ exports.getUsers = async (email) => {
 };
 
 exports.getUserById = async (id) => {
-  const sql = "SELECT * FROM users WHERE id = ? LIMIT 1";
+  const sql = "SELECT * FROM users WHERE user_id = ? LIMIT 1";
   const values = [id];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -80,7 +80,7 @@ exports.createUser = async (
 };
 
 exports.updateRefreshToken = async (user_id, refreshToken) => {
-  const sql = "UPDATE users SET refreshToken = ? WHERE user_id = ?";
+  const sql = "UPDATE users SET refresh_token = ? WHERE user_id = ?";
   const values = [refreshToken, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -93,6 +93,21 @@ exports.updateRefreshToken = async (user_id, refreshToken) => {
     });
   });
 };
+
+exports.updateBlacklistToken = async (user_id, blacklistToken) => {
+  const sql = "UPDATE users SET blacklist_token = ? WHERE user_id = ?";
+  const values = [blacklistToken, user_id];
+  return new Promise((resolve, reject) => {
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 
 exports.updateResetPasswordToken = async (user_id, resetPasswordToken) => {
   const sql = "UPDATE users SET reset_password_token = ? WHERE user_id = ?";
