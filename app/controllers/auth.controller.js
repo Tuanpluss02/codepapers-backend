@@ -14,6 +14,7 @@ const transporter = nodeMailer.createTransport({
 const crypto = require("crypto");
 
 const { v4: uuidv4 } = require("uuid");
+const { getPayloadFromToken } = require("../services/auth.service.js");
 require("dotenv").config();
 
 exports.auth = {
@@ -28,6 +29,8 @@ exports.auth = {
       user: user,
     });
   },
+
+
   register: async (req, res) => {
     const email = req.body.email;
     const fullName = req.body.fullName;
@@ -72,11 +75,15 @@ exports.auth = {
       });
     }
   },
+
+
   verify: (req, res) => {
     res.status(HTTPStatusCode.OK).json({
       message: "Verify successful",
     });
   },
+
+
   refresh: (req, res) => {
     const refreshToken = req.body.refreshToken;
     const payload = authServices.verifyToken(
@@ -104,7 +111,8 @@ exports.auth = {
   },
   logout: async (req, res) => {
     try {
-      const id = req.body.id;
+      const id = getPayloadFromToken(req.headers.authorization.split(" ")[1], process.env.ACCESS_TOKEN_SECRET);
+      console.log(id);
       const user = await query.getUserById(id);
       if (!user) {
         return res
@@ -127,6 +135,9 @@ exports.auth = {
       });
     }
   },
+
+
+
   getTokenReset: async (req, res) => {
     try {
       const host = req.get("host");
@@ -170,6 +181,8 @@ exports.auth = {
       });
     }
   },
+
+
   resetPassword: async (req, res) => {
     try {
       const token = req.params.token;

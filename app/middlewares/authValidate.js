@@ -1,4 +1,5 @@
 const query = require('../modules/user.query');
+const { comparePassword } = require("../services/auth.service.js");
 const { generateToken, verifyToken } = require('../services/auth.service.js');
 const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
 
@@ -7,7 +8,8 @@ exports.authenticatePassword = async (req, res, next) => {
     const email = req.body.email.toLowerCase();
     const password = req.body.password;
     const dataQuery = await query.getUsers(email);
-    if (dataQuery.length === 0 || password !== dataQuery.data[0].password) {
+    console.log(dataQuery);
+    if (dataQuery.length === 0 || comparePassword(password, dataQuery.data[0].password) === false) {
         return res.status(HTTPStatusCode.Unauthorized).send('Invalid email or password');
     }
     req.user = dataQuery.data[0];

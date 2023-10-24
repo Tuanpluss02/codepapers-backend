@@ -17,9 +17,14 @@ const verifyToken = (token, secretKey) => {
     return jwt.verify(token, secretKey);
 }
 
+const getPayloadFromToken = (token, secretKey) => {
+    return jwt.decode(token, secretKey);
+}
+
 module.exports = {
     comparePassword,
     hashPassword,
     generateToken,
-    verifyToken
+    verifyToken,
+    getPayloadFromToken
 }
