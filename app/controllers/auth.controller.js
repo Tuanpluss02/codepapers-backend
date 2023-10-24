@@ -81,14 +81,28 @@ exports.auth = {
 
 
   verify: (req, res) => {
-    res.status(HTTPStatusCode.OK).json({
+    const token = req.body.token;
+    const payload = authServices.verifyToken(token, process.env.ACCESS_TOKEN_SECRET);
+    if (!payload) {
+      return res.status(HTTPStatusCode.Unauthorized).send("Invalid token");
+    }
+    return res.status(HTTPStatusCode.OK).json({
       message: "Verify successful",
     });
   },
 
 
-  refresh: (req, res) => {
+  refresh: async (req, res) => {
     const refreshToken = req.body.refreshToken;
+    const user_id = getPayloadFromToken(refreshToken, process.env.REFRESH_TOKEN_SECRET)._id;
+    const blacklistToken = await query.getBlacklistToken(user_id);
+
+    if (blacklistToken.includes(refreshToken)) {
+      return res
+        .status(HTTPStatusCode.Unauthorized)
+        .send("Refresh token is blacklisted");
+    }
+
     const payload = authServices.verifyToken(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET

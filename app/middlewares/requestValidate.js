@@ -10,12 +10,12 @@ exports.validateReqBody = (req, res, next) => {
         });
     }
     req.body.email = email ? email.toLowerCase() : email;
-    if (email && !validator.isValidEmail(email)) {
+    if (!validator.isValidEmail(email)) {
         return res.status(HTTPStatusCode.BadRequest).json({
             message: 'Invalid email'
         });
     }
-    if (password && !validator.isValidPassword(password)) {
+    if (!validator.isValidPassword(password)) {
         return res.status(HTTPStatusCode.BadRequest).json({
             message: 'Password must be at least 8 characters, including 1 uppercase letter, 1 lowercase letter and 1 number'
         });

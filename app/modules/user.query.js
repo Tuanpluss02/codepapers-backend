@@ -109,6 +109,21 @@ exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
   });
 }
 
+exports.getBlacklistToken = async (user_id) => {
+  const sql = "SELECT access_token, refresh_token FROM users WHERE user_id = ?";
+  const values = [user_id];
+  return new Promise((resolve, reject) => {
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 exports.updateResetPasswordToken = async (user_id, resetPasswordToken) => {
   const sql = "UPDATE users SET reset_password_token = ? WHERE user_id = ?";
   const values = [resetPasswordToken, user_id];
