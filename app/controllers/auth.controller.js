@@ -11,6 +11,8 @@ const transporter = nodeMailer.createTransport({
     pass: process.env.PASSWORD_RS,
   },
 });
+const crypto = require("crypto");
+
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 
@@ -130,34 +132,37 @@ exports.auth = {
       const host = req.get("host");
       const http = req.protocol;
       const email = req.body.email;
-      const buffer = crypto.randomBytes(20);
-      const token = buffer.toString("hex");
-      const user = await query.getUsers(email);
-      if (user.length === 0) {
-        return res.status(HTTPStatusCode.BadRequest).json({
-          message: "Email not found",
-        });
-      }
-      await query.updateResetPasswordToken(user[0].id, token);
-      await query.updateResetPasswordExpires(user[0].id, Date.now() + 300000);
-      const data = {
-        from: process.env.EMAIL_RS,
-        to: email,
-        subject: "Reset password",
-        html:
-          `<h1>Reset password</h1>` +
-          `<p>Click <a href="${http}://${host}/auth/reset/${token}">here</a> to reset your password</p>`,
-      };
-      transporter.sendMail(data, (err, info) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(info);
-          return res.status(HTTPStatusCode.OK).json({
-            message: "Reset password email sent",
+      crypto.randomBytes(20, async (err, buffer) => {
+        const token = buffer.toString("hex");
+        const user = await query.getUsers(email);
+        console.log(user);
+        if (user.length === 0) {
+          return res.status(HTTPStatusCode.BadRequest).json({
+            message: "Email not found",
           });
         }
-      });
+        await query.updateResetPasswordToken(user.data[0].user_id, token);
+        const expireTime = new Date(Date.now() + 300000).toISOString().slice(0, 19).replace('T', ' ');
+        await query.updateResetPasswordExpires(user.data[0].user_id, expireTime);
+        const data = {
+          from: process.env.EMAIL_RS,
+          to: email,
+          subject: "Reset password",
+          html:
+            `<h1>Reset password</h1>` +
+            `<p>Click <a href="${http}://${host}/auth/reset/${token}">here</a> to reset your password</p>`,
+        };
+        transporter.sendMail(data, (err, info) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(info);
+            return res.status(HTTPStatusCode.OK).json({
+              message: "Reset password email sent",
+            });
+          }
+        });
+      })
     } catch (err) {
       console.log(err);
       return res.status(HTTPStatusCode.InternalServerError).json({
@@ -181,9 +186,9 @@ exports.auth = {
         });
       }
       const hashedPassword = await authServices.hashPassword(password);
-      await query.updatePassword(user.id, hashedPassword);
-      await query.updateResetPasswordToken(user.id, null);
-      await query.updateResetPasswordExpires(user.id, null);
+      await query.updatePassword(user.user_id, hashedPassword);
+      await query.updateResetPasswordToken(user.user_id, null);
+      await query.updateResetPasswordExpires(user.user_id, null);
       return res.status(HTTPStatusCode.OK).json({
         message: "Reset password successful",
       });

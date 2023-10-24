@@ -79,9 +79,9 @@ exports.createUser = async (
   });
 };
 
-exports.updateRefreshToken = async (id, refreshToken) => {
-  const sql = "UPDATE users SET refreshToken = ? WHERE id = ?";
-  const values = [refreshToken, id];
+exports.updateRefreshToken = async (user_id, refreshToken) => {
+  const sql = "UPDATE users SET refreshToken = ? WHERE user_id = ?";
+  const values = [refreshToken, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -94,9 +94,9 @@ exports.updateRefreshToken = async (id, refreshToken) => {
   });
 };
 
-exports.updateResetPasswordToken = async (id, resetPasswordToken) => {
-  const sql = "UPDATE users SET reset_password_token = ? WHERE id = ?";
-  const values = [resetPasswordToken, id];
+exports.updateResetPasswordToken = async (user_id, resetPasswordToken) => {
+  const sql = "UPDATE users SET reset_password_token = ? WHERE user_id = ?";
+  const values = [resetPasswordToken, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -109,9 +109,9 @@ exports.updateResetPasswordToken = async (id, resetPasswordToken) => {
   });
 };
 
-exports.updateResetPasswordExpires = async (id, resetPasswordExpires) => {
-  const sql = "UPDATE users SET reset_password_expires = ? WHERE id = ?";
-  const values = [resetPasswordExpires, id];
+exports.updateResetPasswordExpires = async (user_id, resetPasswordExpires) => {
+  const sql = "UPDATE users SET reset_password_expires = ? WHERE user_id = ?";
+  const values = [resetPasswordExpires, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -141,9 +141,9 @@ exports.getUserByResetPasswordToken = async (resetPasswordToken) => {
   return result[0];
 };
 
-exports.updatePassword = async (id, password) => {
-  const sql = "UPDATE users SET password = ? WHERE id = ?";
-  const values = [password, id];
+exports.updatePassword = async (user_id, password) => {
+  const sql = "UPDATE users SET password = ? WHERE user_id = ?";
+  const values = [password, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {
