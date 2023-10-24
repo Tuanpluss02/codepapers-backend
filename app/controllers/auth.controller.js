@@ -30,14 +30,16 @@ exports.auth = {
     });
   },
 
-
   register: async (req, res) => {
-    const email = req.body.email;
-    const fullName = req.body.fullName;
-    const password = req.body.password;
-    const profileAvatar = req.body.profileAvatar;
+    let { email, fullName, password, dateOfBirth } = req.body;
+    const avatar = req.file;
+    if (!avatar) {
+      return res.status(HTTPStatusCode.BadRequest).json({
+        message: "Avatar is required",
+      });
+    }
+    const profileAvatar = avatar.path;
     console.log(req.file);
-    const dateOfBirth = req.body.dateOfBirth;
     try {
       const userList = await query.getUsers(email);
       if (userList.length > 0) {
@@ -47,11 +49,12 @@ exports.auth = {
       }
       const userID = uuidv4();
       const hashedPassword = await authServices.hashPassword(password);
+      password = hashedPassword;
       const createUser = await query.createUser(
         userID,
         fullName,
         email,
-        hashedPassword,
+        password,
         profileAvatar,
         dateOfBirth
       );
@@ -62,8 +65,8 @@ exports.auth = {
       }
       const accessToken = authServices.generateToken(
         {
-          exp: Math.floor(Date.now() / 1000) + (120 * 60),
-          _id: userID
+          exp: Math.floor(Date.now() / 1000) + 120 * 60,
+          _id: userID,
         },
         process.env.ACCESS_TOKEN_SECRET
       );
@@ -79,10 +82,12 @@ exports.auth = {
     }
   },
 
-
   verify: (req, res) => {
     const token = req.body.token;
-    const payload = authServices.verifyToken(token, process.env.ACCESS_TOKEN_SECRET);
+    const payload = authServices.verifyToken(
+      token,
+      process.env.ACCESS_TOKEN_SECRET
+    );
     if (!payload) {
       return res.status(HTTPStatusCode.Unauthorized).send("Invalid token");
     }
@@ -91,10 +96,12 @@ exports.auth = {
     });
   },
 
-
   refresh: async (req, res) => {
     const refreshToken = req.body.refreshToken;
-    const user_id = getPayloadFromToken(refreshToken, process.env.REFRESH_TOKEN_SECRET)._id;
+    const user_id = getPayloadFromToken(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    )._id;
     const blacklistToken = await query.getBlacklistToken(user_id);
 
     if (blacklistToken.includes(refreshToken)) {
@@ -130,7 +137,10 @@ exports.auth = {
   logout: async (req, res) => {
     try {
       const access_token = req.headers.authorization.split(" ")[1];
-      const id = getPayloadFromToken(access_token, process.env.ACCESS_TOKEN_SECRET)._id;
+      const id = getPayloadFromToken(
+        access_token,
+        process.env.ACCESS_TOKEN_SECRET
+      )._id;
       console.log(id);
       const user = await query.getUserById(id);
       if (!user) {
@@ -147,7 +157,7 @@ exports.auth = {
         user.user_id,
         access_token,
         user.refresh_token
-      )
+      );
       await query.updateRefreshToken(id, null);
       return res.status(HTTPStatusCode.OK).json({
         message: "Logout successful",
@@ -159,8 +169,6 @@ exports.auth = {
       });
     }
   },
-
-
 
   getTokenReset: async (req, res) => {
     try {
@@ -177,8 +185,14 @@ exports.auth = {
           });
         }
         await query.updateResetPasswordToken(user.data[0].user_id, token);
-        const expireTime = new Date(Date.now() + 300000).toISOString().slice(0, 19).replace('T', ' ');
-        await query.updateResetPasswordExpires(user.data[0].user_id, expireTime);
+        const expireTime = new Date(Date.now() + 300000)
+          .toISOString()
+          .slice(0, 19)
+          .replace("T", " ");
+        await query.updateResetPasswordExpires(
+          user.data[0].user_id,
+          expireTime
+        );
         const data = {
           from: process.env.EMAIL_RS,
           to: email,
@@ -197,7 +211,7 @@ exports.auth = {
             });
           }
         });
-      })
+      });
     } catch (err) {
       console.log(err);
       return res.status(HTTPStatusCode.InternalServerError).json({
@@ -205,7 +219,6 @@ exports.auth = {
       });
     }
   },
-
 
   resetPassword: async (req, res) => {
     try {
