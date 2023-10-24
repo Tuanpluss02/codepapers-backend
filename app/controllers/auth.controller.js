@@ -61,7 +61,10 @@ exports.auth = {
         });
       }
       const accessToken = authServices.generateToken(
-        { _id: userID },
+        {
+          exp: Math.floor(Date.now() / 1000) + (120 * 60),
+          _id: userID
+        },
         process.env.ACCESS_TOKEN_SECRET
       );
       return res.status(HTTPStatusCode.OK).json({
@@ -109,9 +112,10 @@ exports.auth = {
       accessToken: accessToken,
     });
   },
+
   logout: async (req, res) => {
     try {
-      const id = getPayloadFromToken(req.headers.authorization.split(" ")[1], process.env.ACCESS_TOKEN_SECRET);
+      const id = getPayloadFromToken(req.headers.authorization.split(" ")[1], process.env.ACCESS_TOKEN_SECRET)._id;
       console.log(id);
       const user = await query.getUserById(id);
       if (!user) {
@@ -119,7 +123,7 @@ exports.auth = {
           .status(HTTPStatusCode.Unauthorized)
           .send("User not found, check your id");
       }
-      if (!user.refreshToken) {
+      if (!user.refresh_token) {
         return res
           .status(HTTPStatusCode.Unauthorized)
           .send("User is not logged in");
