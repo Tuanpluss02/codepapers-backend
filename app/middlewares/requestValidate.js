@@ -3,7 +3,6 @@ const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
 
 // Middleware kiểm tra body request
 exports.validateReqBody = (req, res, next) => {
-    console.log(req.body);
     const { email, password, fullName } = req.body;
     if (!email || !password) {
         return res.status(HTTPStatusCode.BadRequest).json({
