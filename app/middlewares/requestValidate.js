@@ -3,7 +3,7 @@ const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
 
 // Middleware kiểm tra body request
 exports.validateReqBody = (req, res, next) => {
-    const { email, password, fullName } = req.body;
+    const { email, password, full_name } = req.body;
     if (!email || !password) {
         return res.status(HTTPStatusCode.BadRequest).json({
             message: 'Missing required fields'
@@ -20,9 +20,9 @@ exports.validateReqBody = (req, res, next) => {
             message: 'Password must be at least 8 characters, including 1 uppercase letter, 1 lowercase letter and 1 number'
         });
     }
-    if (fullName && !validator.isValidName(fullName)) {
+    if (full_name && !validator.isValidName(full_name)) {
         return res.status(HTTPStatusCode.BadRequest).json({
-            message: 'Invalid fullName'
+            message: 'Invalid full_name'
         });
     }
     return next();

@@ -1,4 +1,5 @@
 const query = require('../modules/user.query');
+const { getPayloadFromToken } = require("../services/auth.service.js");
 const { comparePassword } = require("../services/auth.service.js");
 const { generateToken, verifyToken } = require('../services/auth.service.js');
 const HTTPStatusCode = new (require('../common/constants/HttpStatusCode'))();
@@ -61,6 +62,22 @@ exports.authenticateRefreshToken = async (req, res, next) => {
     const dataQuery = await query.getUsers(payload.id);
     if (dataQuery.length === 0 || dataQuery.data[0].refreshToken !== refreshToken) {
         return res.status(HTTPStatusCode.Unauthorized).send('Invalid refresh token');
+    }
+    req.user = dataQuery.data[0];
+    next();
+}
+
+exports.authenticateAccessToken = async (req, res, next) => { 
+    const accessToken = req.headers.authorization.split(' ')[1];
+    try {
+        verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    } catch (error) {
+        return res.status(HTTPStatusCode.Unauthorized).send('Access token expired, please login again');
+    }
+    const id = getPayloadFromToken(accessToken, process.env.ACCESS_TOKEN_SECRET)._id;
+    const dataQuery = await query.getUsers(id);
+    if (dataQuery.length === 0) {
+        return res.status(HTTPStatusCode.Unauthorized).send('Invalid access token');
     }
     req.user = dataQuery.data[0];
     next();

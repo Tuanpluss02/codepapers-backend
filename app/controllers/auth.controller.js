@@ -31,14 +31,14 @@ exports.auth = {
   },
 
   register: async (req, res) => {
-    let { email, fullName, password, dateOfBirth } = req.body;
+    let { email, full_name, password, date_of_birth } = req.body;
     const avatar = req.file;
     if (!avatar) {
       return res.status(HTTPStatusCode.BadRequest).json({
         message: "Avatar is required",
       });
     }
-    const profileAvatar = avatar.path;
+    const profile_avatar = avatar.path;
     console.log(req.file);
     try {
       const userList = await query.getUsers(email);
@@ -47,16 +47,16 @@ exports.auth = {
           message: "Email already exists",
         });
       }
-      const userID = uuidv4();
+      const user_id = uuidv4();
       const hashedPassword = await authServices.hashPassword(password);
       password = hashedPassword;
       const createUser = await query.createUser(
-        userID,
-        fullName,
+        user_id,
+        full_name,
         email,
         password,
-        profileAvatar,
-        dateOfBirth
+        profile_avatar,
+        date_of_birth
       );
       if (!createUser) {
         return res.status(HTTPStatusCode.InternalServerError).json({
@@ -66,7 +66,7 @@ exports.auth = {
       const accessToken = authServices.generateToken(
         {
           exp: Math.floor(Date.now() / 1000) + 120 * 60,
-          _id: userID,
+          _id: user_id,
         },
         process.env.ACCESS_TOKEN_SECRET
       );
@@ -137,11 +137,11 @@ exports.auth = {
   logout: async (req, res) => {
     try {
       const access_token = req.headers.authorization.split(" ")[1];
+      
       const id = getPayloadFromToken(
         access_token,
         process.env.ACCESS_TOKEN_SECRET
       )._id;
-      console.log(id);
       const user = await query.getUserById(id);
       if (!user) {
         return res

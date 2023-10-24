@@ -57,10 +57,10 @@
                 "name": {
                   "example": "any"
                 },
-                "profileAvatar": {
+                "profile_avatar": {
                   "example": "any"
                 },
-                "dateOfBirth": {
+                "date_of_birth": {
                   "example": "any"
                 }
               }
