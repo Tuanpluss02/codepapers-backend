@@ -28,11 +28,10 @@ exports.auth = {
   },
   register: async (req, res) => {
     const email = req.body.email;
-    const name = req.body.name;
+    const fullName = req.body.fullName;
     const password = req.body.password;
-    // const profileAvatar = req.body.profileAvatar;
-    const profileAvatar = req.file;
-    console.log(profileAvatar);
+    const profileAvatar = req.body.profileAvatar;
+    console.log(req.file);
     const dateOfBirth = req.body.dateOfBirth;
     try {
       const userList = await query.getUsers(email);
@@ -41,9 +40,11 @@ exports.auth = {
           message: "Email already exists",
         });
       }
+      const userID = uuidv4();
       const hashedPassword = await authServices.hashPassword(password);
       const createUser = await query.createUser(
-        name,
+        userID,
+        fullName,
         email,
         hashedPassword,
         profileAvatar,
@@ -55,7 +56,7 @@ exports.auth = {
         });
       }
       const accessToken = authServices.generateToken(
-        { _id: uuidv4() },
+        { _id: userID },
         process.env.ACCESS_TOKEN_SECRET
       );
       return res.status(HTTPStatusCode.OK).json({

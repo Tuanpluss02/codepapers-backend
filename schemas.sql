@@ -1,4 +1,3 @@
-use codepapers;
 create table if not exists comments
 (
     comment_id varchar(20) not null,
@@ -101,14 +100,14 @@ alter table user_posts
 
 create table if not exists users
 (
-    user_id                varchar(20)  not null,
+    user_id                varchar(50)  not null,
     full_name              varchar(255) not null,
     email                  varchar(255) not null,
     password               varchar(255) not null,
     profile_avatar         varchar(255) not null,
     date_of_birth          date         not null,
-    reset_password_expires time         not null,
-    reset_password_token   varchar(255) not null
+    reset_password_expires time         null,
+    reset_password_token   varchar(255) null
 );
 
 alter table users
@@ -146,3 +145,4 @@ alter table users
 alter table users
     add constraint user_id_UNIQUE
         unique (user_id);
+
