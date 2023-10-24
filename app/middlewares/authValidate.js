@@ -37,10 +37,6 @@ exports.generateTokens = async (req, res, next) => {
             return res.status(HTTPStatusCode.Unauthorized).send('Login failed, please try again');
         });
     } else {
-        // const jwtPayload = await verifyToken(user.refreshToken, process.env.REFRESH_TOKEN_SECRET);
-        // if (!jwtPayload) {
-        //     return res.status(HTTPStatusCode.Unauthorized).send('Login failed, please try again');
-        // }
         refreshToken = user.refreshToken;
     }
 
