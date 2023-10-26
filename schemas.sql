@@ -34,7 +34,7 @@ alter table follower
     add constraint follower_id_UNIQUE
         unique (follower_id);
 
-create table if not exists post
+create table if not exists posts
 (
     post_id   varchar(20)  not null,
     title     varchar(255) not null,
@@ -42,11 +42,11 @@ create table if not exists post
     posted_at datetime     not null
 );
 
-alter table post
+alter table posts
     add constraint `PRIMARY`
         primary key (post_id);
 
-alter table post
+alter table posts
     add constraint post_id_UNIQUE
         unique (post_id);
 
@@ -80,13 +80,13 @@ alter table user_comment
 
 alter table user_comment
     add constraint user_comment_post_post_id_fk
-        foreign key (post_id) references post (post_id);
+        foreign key (post_id) references posts (post_id);
 
 create table if not exists user_posts
 (
     post_id    varchar(20) not null,
     user_id    varchar(20) not null,
-    user_liked varchar(20) not null
+    user_liked varchar(20) null
 );
 
 alter table user_posts
@@ -103,7 +103,7 @@ alter table user_posts
 
 alter table user_posts
     add constraint user_posts_post_post_id_fk
-        foreign key (post_id) references post (post_id);
+        foreign key (post_id) references posts (post_id);
 
 create table if not exists users
 (
