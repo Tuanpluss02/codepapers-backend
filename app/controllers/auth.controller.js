@@ -1,5 +1,5 @@
 const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
-const query = require("../modules/user.query.js");
+const userQuery = require("../modules/user.query.js");
 const authServices = require("../services/auth.service.js");
 const nodeMailer = require("nodemailer");
 const transporter = nodeMailer.createTransport({
@@ -31,32 +31,32 @@ exports.auth = {
   },
 
   register: async (req, res) => {
-    let { email, fullName, password, dateOfBirth } = req.body;
+    let { email, full_name, password, date_of_birth } = req.body;
     const avatar = req.file;
     if (!avatar) {
       return res.status(HTTPStatusCode.BadRequest).json({
         message: "Avatar is required",
       });
     }
-    const profileAvatar = avatar.path;
+    const profile_avatar = avatar.path;
     console.log(req.file);
     try {
-      const userList = await query.getUsers(email);
+      const userList = await userQuery.getUsers(email);
       if (userList.length > 0) {
         return res.status(HTTPStatusCode.BadRequest).json({
           message: "Email already exists",
         });
       }
-      const userID = uuidv4();
+      const user_id = uuidv4();
       const hashedPassword = await authServices.hashPassword(password);
       password = hashedPassword;
-      const createUser = await query.createUser(
-        userID,
-        fullName,
+      const createUser = await userQuery.createUser(
+        user_id,
+        full_name,
         email,
         password,
-        profileAvatar,
-        dateOfBirth
+        profile_avatar,
+        date_of_birth
       );
       if (!createUser) {
         return res.status(HTTPStatusCode.InternalServerError).json({
@@ -66,7 +66,7 @@ exports.auth = {
       const accessToken = authServices.generateToken(
         {
           exp: Math.floor(Date.now() / 1000) + 120 * 60,
-          _id: userID,
+          _id: user_id,
         },
         process.env.ACCESS_TOKEN_SECRET
       );
@@ -86,6 +86,7 @@ exports.auth = {
     const token = req.body.token;
     const payload = authServices.verifyToken(
       token,
+
       process.env.ACCESS_TOKEN_SECRET
     );
     if (!payload) {
@@ -100,9 +101,10 @@ exports.auth = {
     const refreshToken = req.body.refreshToken;
     const user_id = getPayloadFromToken(
       refreshToken,
+
       process.env.REFRESH_TOKEN_SECRET
     )._id;
-    const blacklistToken = await query.getBlacklistToken(user_id);
+    const blacklistToken = await userQuery.getBlacklistToken(user_id);
 
     if (blacklistToken.includes(refreshToken)) {
       return res
@@ -142,7 +144,7 @@ exports.auth = {
         process.env.ACCESS_TOKEN_SECRET
       )._id;
       console.log(id);
-      const user = await query.getUserById(id);
+      const user = await userQuery.getUserById(id);
       if (!user) {
         return res
           .status(HTTPStatusCode.Unauthorized)
@@ -153,12 +155,12 @@ exports.auth = {
           .status(HTTPStatusCode.Unauthorized)
           .send("User is not logged in");
       }
-      await query.updateBlacklistToken(
+      await userQuery.updateBlacklistToken(
         user.user_id,
         access_token,
         user.refresh_token
       );
-      await query.updateRefreshToken(id, null);
+      await userQuery.updateRefreshToken(id, null);
       return res.status(HTTPStatusCode.OK).json({
         message: "Logout successful",
       });
@@ -177,19 +179,19 @@ exports.auth = {
       const email = req.body.email;
       crypto.randomBytes(20, async (err, buffer) => {
         const token = buffer.toString("hex");
-        const user = await query.getUsers(email);
+        const user = await userQuery.getUsers(email);
         console.log(user);
         if (user.length === 0) {
           return res.status(HTTPStatusCode.BadRequest).json({
             message: "Email not found",
           });
         }
-        await query.updateResetPasswordToken(user.data[0].user_id, token);
+        await userQuery.updateResetPasswordToken(user.data[0].user_id, token);
         const expireTime = new Date(Date.now() + 300000)
           .toISOString()
           .slice(0, 19)
           .replace("T", " ");
-        await query.updateResetPasswordExpires(
+        await userQuery.updateResetPasswordExpires(
           user.data[0].user_id,
           expireTime
         );
@@ -224,7 +226,7 @@ exports.auth = {
     try {
       const token = req.params.token;
       const password = req.body.password;
-      const user = await query.getUserByResetPasswordToken(token);
+      const user = await userQuery.getUserByResetPasswordToken(token);
       if (!user) {
         return res.status(HTTPStatusCode.BadRequest).json({
           message: "Invalid token",
@@ -236,9 +238,9 @@ exports.auth = {
         });
       }
       const hashedPassword = await authServices.hashPassword(password);
-      await query.updatePassword(user.user_id, hashedPassword);
-      await query.updateResetPasswordToken(user.user_id, null);
-      await query.updateResetPasswordExpires(user.user_id, null);
+      await userQuery.updatePassword(user.user_id, hashedPassword);
+      await userQuery.updateResetPasswordToken(user.user_id, null);
+      await userQuery.updateResetPasswordExpires(user.user_id, null);
       return res.status(HTTPStatusCode.OK).json({
         message: "Reset password successful",
       });
