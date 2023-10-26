@@ -17,7 +17,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getPayloadFromToken } = require("../services/auth.service.js");
 require("dotenv").config();
 
-exports.auth = {
+exports.authController = {
   login: async (req, res) => {
     const accessToken = req.accessToken;
     const refreshToken = req.refreshToken;

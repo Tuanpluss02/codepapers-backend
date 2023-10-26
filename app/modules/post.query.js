@@ -1,6 +1,6 @@
 const db = require("../services/database.service.js");
 
-exports.getAllPostsOfUser = async (user_id) => {
+exports.getPosts = async (user_id) => {
   const sql =
     "SELECT * FROM user_posts \
     LEFT JOIN posts ON user_posts.post_id = posts.post_id \

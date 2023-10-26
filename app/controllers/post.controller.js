@@ -1,8 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
-const { HTTPStatusCode } = require("../utils/httpStatusCodes.js");
+const { HTTPStatusCode } = require("../common/constants/HttpStatusCode.js");
 const postQuery = require("../modules/post.query.js");
 
-exports.post = {
+exports.postController = {
   createNewPost: async (req, res) => {
     try {
       const user_id = req.user._id;
@@ -33,6 +33,83 @@ exports.post = {
       console.error(error);
       return res.status(HTTPStatusCode.InternalServerError).json({
         message: "Create new post failed",
+      });
+    }
+  },
+  getAllPostsOfUser: async (req, res) => {
+    try {
+      const user_id = req.user.user_id;
+      const result = await postQuery.getAllPostsOfUser(user_id);
+      if (!result) {
+        return res.status(HTTPStatusCode.InternalServerError).json({
+          message: "Get all posts failed",
+        });
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        result,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: "Get all posts failed",
+      });
+    }
+  },
+  getPostbyID: async (req, res) => {
+    try {
+      const post_id = req.params.post_id;
+      const result = await postQuery.getPostbyID(post_id);
+      if (!result) {
+        return res.status(HTTPStatusCode.InternalServerError).json({
+          message: "Get post failed",
+        });
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        result,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: "Get post failed",
+      });
+    }
+  },
+  updatePost: async (req, res) => {
+    try {
+      const post_id = req.params.post_id;
+      const { title, body } = req.body;
+      const result = await postQuery.updatePost(post_id, title, body);
+      if (!result) {
+        return res.status(HTTPStatusCode.InternalServerError).json({
+          message: "Update post failed",
+        });
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Update post successful",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: "Update post failed",
+      });
+    }
+  },
+  deletePost: async (req, res) => {
+    try {
+      const post_id = req.params.post_id;
+      const result = await postQuery.deletePost(post_id);
+      if (!result) {
+        return res.status(HTTPStatusCode.InternalServerError).json({
+          message: "Delete post failed",
+        });
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Delete post successful",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: "Delete post failed",
       });
     }
   },
