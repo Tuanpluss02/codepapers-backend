@@ -5,14 +5,14 @@ const postQuery = require("../modules/post.query.js");
 exports.post = {
   createNewPost: async (req, res) => {
     try {
-      const post = req.post;
-      const user_id = req.user_id;
+      const user_id = req.user._id;
       const post_id = uuidv4();
+      const { title, body, posted_at } = req.body;
       const newpost = await postQuery.createPost(
         post_id,
-        post.title,
-        post.body,
-        post.posted_at
+        title,
+        body,
+        posted_at
       );
       if (!newpost) {
         return res.status(HTTPStatusCode.InternalServerError).json({
