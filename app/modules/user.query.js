@@ -57,16 +57,16 @@ exports.getUserById = async (id) => {
 };
 
 exports.createUser = async (
-  userID,
+  user_id,
   name,
   email,
   password,
-  profileAvatar,
-  dateOfBirth
+  profile_avatar,
+  date_of_birth
 ) => {
   const sql =
     "INSERT INTO users (user_id, full_name, email, password, profile_avatar, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [userID, name, email, password, profileAvatar, dateOfBirth];
+  const values = [user_id, name, email, password, profile_avatar, date_of_birth];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {

@@ -31,12 +31,15 @@ exports.auth = {
   },
 
   register: async (req, res) => {
-    const email = req.body.email;
-    const fullName = req.body.fullName;
-    const password = req.body.password;
-    const profileAvatar = req.body.profileAvatar;
+    let { email, full_name, password, date_of_birth } = req.body;
+    const avatar = req.file;
+    if (!avatar) {
+      return res.status(HTTPStatusCode.BadRequest).json({
+        message: "Avatar is required",
+      });
+    }
+    const profile_avatar = avatar.path;
     console.log(req.file);
-    const dateOfBirth = req.body.dateOfBirth;
     try {
       const userList = await userQuery.getUsers(email);
       if (userList.length > 0) {
@@ -44,15 +47,16 @@ exports.auth = {
           message: "Email already exists",
         });
       }
-      const userID = uuidv4();
+      const user_id = uuidv4();
       const hashedPassword = await authServices.hashPassword(password);
+      password = hashedPassword;
       const createUser = await userQuery.createUser(
-        userID,
-        fullName,
+        user_id,
+        full_name,
         email,
-        hashedPassword,
-        profileAvatar,
-        dateOfBirth
+        password,
+        profile_avatar,
+        date_of_birth
       );
       if (!createUser) {
         return res.status(HTTPStatusCode.InternalServerError).json({
@@ -62,7 +66,7 @@ exports.auth = {
       const accessToken = authServices.generateToken(
         {
           exp: Math.floor(Date.now() / 1000) + 120 * 60,
-          _id: userID,
+          _id: user_id,
         },
         process.env.ACCESS_TOKEN_SECRET
       );
@@ -82,6 +86,7 @@ exports.auth = {
     const token = req.body.token;
     const payload = authServices.verifyToken(
       token,
+
       process.env.ACCESS_TOKEN_SECRET
     );
     if (!payload) {
@@ -96,6 +101,7 @@ exports.auth = {
     const refreshToken = req.body.refreshToken;
     const user_id = getPayloadFromToken(
       refreshToken,
+
       process.env.REFRESH_TOKEN_SECRET
     )._id;
     const blacklistToken = await userQuery.getBlacklistToken(user_id);
