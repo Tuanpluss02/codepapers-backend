@@ -1,8 +1,6 @@
 create table if not exists blacklist_token
 (
-    refresh_token varchar(255) null,
-    user_id       varchar(50)  not null,
-    access_token  varchar(255) null
+    token varchar(255) null
 );
 
 create table if not exists comments
@@ -22,8 +20,8 @@ alter table comments
 
 create table if not exists follower
 (
-    follower_id varchar(20) not null,
-    followed_id varchar(20) not null
+    follower_id varchar(50) not null,
+    followed_id varchar(50) not null
 );
 
 alter table follower
@@ -36,7 +34,7 @@ alter table follower
 
 create table if not exists posts
 (
-    post_id   varchar(20)  not null,
+    post_id   varchar(50)  not null,
     title     varchar(255) not null,
     body      text         not null,
     posted_at datetime     not null
@@ -84,9 +82,9 @@ alter table user_comment
 
 create table if not exists user_posts
 (
-    post_id    varchar(20) not null,
-    user_id    varchar(20) not null,
-    user_liked varchar(20) null
+    post_id    varchar(50) not null,
+    user_id    varchar(50) not null,
+    user_liked varchar(50) null
 );
 
 alter table user_posts
@@ -121,10 +119,6 @@ create table if not exists users
 alter table users
     add constraint `PRIMARY`
         primary key (user_id);
-
-alter table blacklist_token
-    add constraint blacklist_token_users_user_id_fk
-        foreign key (user_id) references users (user_id);
 
 alter table follower
     add constraint follower_users_user_id_fk

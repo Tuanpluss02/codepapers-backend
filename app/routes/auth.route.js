@@ -1,9 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
 const { authController } = require("../controllers/auth.controller.js");
-const {
-  validateReqBody,
-} = require("../middlewares/requestValidate.js");
+const { validateReqBody } = require("../middlewares/requestValidate.js");
 
 const {
   authenticatePassword,

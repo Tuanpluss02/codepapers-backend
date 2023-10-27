@@ -1,6 +1,6 @@
 const db = require("../services/database.service.js");
 
-exports.getAllPostsOfUser = async (user_id) => {
+exports.getPosts = async (user_id) => {
   const sql =
     "SELECT * FROM user_posts \
     LEFT JOIN posts ON user_posts.post_id = posts.post_id \
@@ -36,7 +36,7 @@ exports.getPostbyID = async (post_id) => {
 
 exports.createPost = async (post_id, title, body, posted_at) => {
   const sql =
-    "INSERT INTO posts (post_id, title, body, posted_at) VALUES (?, ?, ?, ?)";
+    "INSERT INTO posts (post_id, title, body, posted_at) VALUES (?, ?, ?, from_unixtime(?/1000))";
   const values = [post_id, title, body, posted_at];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {

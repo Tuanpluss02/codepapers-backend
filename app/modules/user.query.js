@@ -66,7 +66,14 @@ exports.createUser = async (
 ) => {
   const sql =
     "INSERT INTO users (user_id, full_name, email, password, profile_avatar, date_of_birth) VALUES (?, ?, ?, ?, ?, ?)";
-  const values = [user_id, name, email, password, profile_avatar, date_of_birth];
+  const values = [
+    user_id,
+    name,
+    email,
+    password,
+    profile_avatar,
+    date_of_birth,
+  ];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {
@@ -95,7 +102,8 @@ exports.updateRefreshToken = async (user_id, refreshToken) => {
 };
 
 exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
-  const sql = "UPDATE users SET access_token = ?, refresh_token = ? WHERE user_id = ?";
+  const sql =
+    "UPDATE users SET access_token = ?, refresh_token = ? WHERE user_id = ?";
   const values = [access_token, refresh_token, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -107,7 +115,7 @@ exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
       }
     });
   });
-}
+};
 
 exports.getBlacklistToken = async (user_id) => {
   const sql = "SELECT access_token, refresh_token FROM users WHERE user_id = ?";
@@ -122,7 +130,7 @@ exports.getBlacklistToken = async (user_id) => {
       }
     });
   });
-}
+};
 
 exports.updateResetPasswordToken = async (user_id, resetPasswordToken) => {
   const sql = "UPDATE users SET reset_password_token = ? WHERE user_id = ?";

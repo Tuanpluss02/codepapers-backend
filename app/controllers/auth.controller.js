@@ -17,7 +17,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getPayloadFromToken } = require("../services/auth.service.js");
 require("dotenv").config();
 
-exports.auth = {
+exports.authController = {
   login: async (req, res) => {
     const accessToken = req.accessToken;
     const refreshToken = req.refreshToken;
@@ -180,7 +180,6 @@ exports.auth = {
       crypto.randomBytes(20, async (err, buffer) => {
         const token = buffer.toString("hex");
         const user = await userQuery.getUsers(email);
-        console.log(user);
         if (user.length === 0) {
           return res.status(HTTPStatusCode.BadRequest).json({
             message: "Email not found",
@@ -188,7 +187,7 @@ exports.auth = {
         }
         await userQuery.updateResetPasswordToken(user.data[0].user_id, token);
         const expireTime = new Date(Date.now() + 300000)
-          .toISOString()
+          .toLocaleString()
           .slice(0, 19)
           .replace("T", " ");
         await userQuery.updateResetPasswordExpires(

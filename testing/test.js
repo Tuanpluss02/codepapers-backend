@@ -1,31 +1,12 @@
-// const fs = require("fs");
-const query = require("../app/modules/user.query");
+// console.log(new Date().toISOString().slice(0, 19).replace("T", " "));
+// const date = Date.now();
+// console.log(date);
 
-// const path = require("path");
+var currentTime = Date.now(); // Lấy thời gian hiện tại
+console.log(currentTime); // Kết quả: 1635321296000
+var mysqlDateTime = new Date(currentTime)
+  .toISOString()
+  .slice(0, 19)
+  .replace("T", " ");
 
-// const pathToData = path.join(__dirname, "data.json");
-
-// const jsonData = fs.readFileSync(pathToData);
-// const dataMock = JSON.parse(jsonData);
-
-// dataMock.forEach((item) => async () => {
-//   try {
-//     const result = await query.createUser(
-//       item.name,
-//       item.email,
-//       item.password,
-//       item.avatar,
-//       item.dateofbirth.split("T")[0]
-//     );
-//     if (result) {
-//       console.log("inserted");
-//     } else {
-//       console.log("not inserted");
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// });
-
-
-const posts
+console.log(mysqlDateTime); // Kết quả: 2023-10-27 12:34:56
