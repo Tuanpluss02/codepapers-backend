@@ -1,13 +1,20 @@
 const { v4: uuidv4 } = require("uuid");
-const { HTTPStatusCode } = require("../common/constants/HttpStatusCode.js");
+const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
 const postQuery = require("../modules/post.query.js");
 
 exports.postController = {
   createNewPost: async (req, res) => {
     try {
-      const user_id = req.user._id;
+      console.log(req.user.user_id);
+      const user_id = req.user.user_id;
       const post_id = uuidv4();
       const { title, body, posted_at } = req.body;
+      // const posted_at_date = new Date(posted_at)
+      //   .toLocaleString()
+      //   .slice(0, 19)
+      //   .replace("T", " ");
+      // const temp = new Date(posted_at);
+      // console.log(posted_at_date);
       const newpost = await postQuery.createPost(
         post_id,
         title,
@@ -36,10 +43,11 @@ exports.postController = {
       });
     }
   },
-  getAllPostsOfUser: async (req, res) => {
+  getPosts: async (req, res) => {
     try {
       const user_id = req.user.user_id;
-      const result = await postQuery.getAllPostsOfUser(user_id);
+
+      const result = await postQuery.getPosts(user_id);
       if (!result) {
         return res.status(HTTPStatusCode.InternalServerError).json({
           message: "Get all posts failed",

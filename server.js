@@ -27,7 +27,7 @@ app.use(
 );
 
 app.use("/auth", authRouter);
-app.use("/posts", postRouter);
+app.use("/post", postRouter);
 
 app.listen(3000, () => {
   console.log(

@@ -27,17 +27,18 @@ exports.generateTokens = async (req, res, next) => {
   const user = req.user;
   const payloadAccessToken = {
     _id: user.user_id,
-    exp:
-      Math.floor(Date.now() / 1000) + parseInt(process.env.ACCESS_TOKEN_LIFE),
+    // exp: parseInt(process.env.ACCESS_TOKEN_LIFE),
+    // Math.floor(Date.now() / 1000) + parseInt(process.env.ACCESS_TOKEN_LIFE),
   };
   const payloadRefreshToken = {
     _id: user.user_id,
-    exp:
-      Math.floor(Date.now() / 1000) + parseInt(process.env.REFRESH_TOKEN_LIFE),
+    // exp: parseInt(process.env.REFRESH_TOKEN_LIFE),
+    // Math.floor(Date.now() / 1000) + parseInt(process.env.REFRESH_TOKEN_LIFE),
   };
   const accessToken = generateToken(
     payloadAccessToken,
-    process.env.ACCESS_TOKEN_SECRET
+    process.env.ACCESS_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_LIFE.toString()
   );
   if (!accessToken) {
     return res
@@ -47,7 +48,8 @@ exports.generateTokens = async (req, res, next) => {
 
   let refreshToken = generateToken(
     payloadRefreshToken,
-    process.env.REFRESH_TOKEN_SECRET
+    process.env.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_LIFE.toString()
   );
   if (!user.refreshToken) {
     await userQuery
@@ -108,16 +110,18 @@ exports.authenticateAccessToken = async (req, res, next) => {
   try {
     verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
   } catch (error) {
+    console.log(error);
     return res.status(HTTPStatusCode.Unauthorized).send("Access token expired");
   }
   const id = getPayloadFromToken(
     accessToken,
     process.env.ACCESS_TOKEN_SECRET
   )._id;
-  const dataQuery = await userQuery.getUsers(id);
+
+  const dataQuery = await userQuery.getUserById(id);
   if (dataQuery.length === 0) {
     return res.status(HTTPStatusCode.Unauthorized).send("Invalid access token");
   }
-  req.user = dataQuery.data[0];
+  req.user = dataQuery;
   next();
 };
