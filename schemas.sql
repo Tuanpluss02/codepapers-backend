@@ -5,7 +5,7 @@ create table if not exists blacklist_token
 
 create table if not exists comments
 (
-    comment_id varchar(20) not null,
+    comment_id varchar(50) not null,
     content    text        not null,
     comment_at datetime    not null
 );
@@ -50,10 +50,10 @@ alter table posts
 
 create table if not exists user_comment
 (
-    post_id        varchar(20) not null,
-    user_id        varchar(20) not null,
-    user_liked_cmt varchar(20) not null,
-    comment_id     varchar(20) not null
+    post_id        varchar(50) not null,
+    user_id        varchar(50) not null,
+    user_liked_cmt varchar(50) null,
+    comment_id     varchar(50) not null
 );
 
 alter table user_comment
@@ -61,16 +61,8 @@ alter table user_comment
         unique (comment_id);
 
 alter table user_comment
-    add constraint post_id_UNIQUE
-        unique (post_id);
-
-alter table user_comment
-    add constraint user_id_UNIQUE
-        unique (user_id);
-
-alter table user_comment
     add constraint user_liked_cmt_UNIQUE
-        unique (user_liked_cmt);
+        unique (user_liked_cmt, comment_id);
 
 alter table user_comment
     add constraint user_comment_comments_comment_id_fk
