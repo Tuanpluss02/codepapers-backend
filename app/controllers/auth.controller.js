@@ -63,12 +63,13 @@ exports.authController = {
           message: "Register failed",
         });
       }
+      const payloadAccessToken = {
+        _id: user_id,
+      };
       const accessToken = authServices.generateToken(
-        {
-          exp: Math.floor(Date.now() / 1000) + 120 * 60,
-          _id: user_id,
-        },
-        process.env.ACCESS_TOKEN_SECRET
+        payloadAccessToken,
+        process.env.ACCESS_TOKEN_SECRET,
+        process.env.ACCESS_TOKEN_LIFE.toString()
       );
       return res.status(HTTPStatusCode.OK).json({
         message: "Register successful",
@@ -86,7 +87,6 @@ exports.authController = {
     const token = req.body.token;
     const payload = authServices.verifyToken(
       token,
-
       process.env.ACCESS_TOKEN_SECRET
     );
     if (!payload) {
@@ -101,7 +101,6 @@ exports.authController = {
     const refreshToken = req.body.refreshToken;
     const user_id = getPayloadFromToken(
       refreshToken,
-
       process.env.REFRESH_TOKEN_SECRET
     )._id;
     const blacklistToken = await userQuery.getBlacklistToken(user_id);
@@ -123,7 +122,8 @@ exports.authController = {
     }
     const accessToken = authServices.generateToken(
       payload,
-      process.env.ACCESS_TOKEN_SECRET
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.ACCESS_TOKEN_LIFE.toString()
     );
     if (!accessToken) {
       return res
@@ -187,7 +187,7 @@ exports.authController = {
         }
         await userQuery.updateResetPasswordToken(user.data[0].user_id, token);
         const expireTime = new Date(Date.now() + 300000)
-          .toLocaleString()
+          .toISOString()
           .slice(0, 19)
           .replace("T", " ");
         await userQuery.updateResetPasswordExpires(
