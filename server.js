@@ -9,6 +9,7 @@ const multer = require("multer");
 const authRouter = require("./app/routes/auth.route");
 const postRouter = require("./app/routes/post.route");
 const followRouter = require("./app/routes/follow.route");
+const commentRouter = require("./app/routes/comment.route");
 const { diskStorage, fileFilter } = require("./app/utils/multerConfig");
 
 const swaggerFile = require("./swagger_output.json");
@@ -30,6 +31,7 @@ app.use(
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
 app.use("/follow", followRouter);
+app.use("/comment", commentRouter)
 
 app.listen(3000, () => {
   console.log(
