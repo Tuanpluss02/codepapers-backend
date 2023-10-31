@@ -11,12 +11,6 @@ exports.postController = {
       const post_id = uuidv4();
       const posted_at = date.getNow();
       const { title, body } = req.body;
-      // const posted_at_date = new Date(posted_at)
-      //   .toLocaleString()
-      //   .slice(0, 19)
-      //   .replace("T", " ");
-      // const temp = new Date(posted_at);
-      // console.log(posted_at_date);
       const newpost = await postQuery.createPost(
         post_id,
         title,
