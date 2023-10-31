@@ -86,7 +86,7 @@ exports.createConversation = async (
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        // resolve(result);
       }
     });
   });

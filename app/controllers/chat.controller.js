@@ -8,9 +8,7 @@ exports.chatController = {
     try {
       const { conversation_name, created_at } = req.body;
       const conversation_id = uuidv4();
-      const created_at_sql = timestampToDateTime(parseInt(created_at));
-      console.log(created_at);
-      console.log(created_at_sql);
+      const created_at_sql = timestampToDateTime(created_at);
       const result = await chatQuery.createConversation(
         conversation_id,
         conversation_name,
