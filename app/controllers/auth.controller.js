@@ -93,7 +93,8 @@ exports.authController = {
       });
     }
     const profile_avatar = avatar.path;
-    console.log(req.file);
+    const relativePath = profile_avatar.split("public")[1];
+    const profile_avatar_res = relativePath.replace(/\\/g, "/");
     try {
       const userList = await userQuery.getUsers(email);
       if (userList.length > 0) {
@@ -101,7 +102,7 @@ exports.authController = {
           message: "Email already exists",
         });
       }
-      const user_id = uuidv4();
+      const user_id = req.body.user_id;
       const hashedPassword = await authServices.hashPassword(password);
       password = hashedPassword;
       const createUser = await userQuery.createUser(
@@ -109,7 +110,7 @@ exports.authController = {
         full_name,
         email,
         password,
-        profile_avatar,
+        profile_avatar_res,
         date_of_birth
       );
       if (!createUser) {
@@ -117,10 +118,11 @@ exports.authController = {
           message: "Register failed",
         });
       }
+      const payloadAccessToken = {
+        _id: user_id,
+      };
       const accessToken = authServices.generateToken(
-        {
-          _id: user_id,
-        },
+        payloadAccessToken,
         process.env.ACCESS_TOKEN_SECRET,
         process.env.ACCESS_TOKEN_LIFE.toString()
       );
@@ -140,7 +142,6 @@ exports.authController = {
     const token = req.body.token;
     const payload = authServices.verifyToken(
       token,
-
       process.env.ACCESS_TOKEN_SECRET
     );
     if (!payload) {
@@ -155,7 +156,6 @@ exports.authController = {
     const refreshToken = req.body.refreshToken;
     const user_id = getPayloadFromToken(
       refreshToken,
-
       process.env.REFRESH_TOKEN_SECRET
     )._id;
     const blacklistToken = await userQuery.getBlacklistToken(user_id);
@@ -177,6 +177,8 @@ exports.authController = {
     }
     const accessToken = authServices.generateToken(
       payload,
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.ACCESS_TOKEN_LIFE.toString()
       process.env.ACCESS_TOKEN_SECRET,
       process.env.ACCESS_TOKEN_LIFE.toString()
     );
@@ -242,7 +244,7 @@ exports.authController = {
         }
         await userQuery.updateResetPasswordToken(user.data[0].user_id, token);
         const expireTime = new Date(Date.now() + 300000)
-          .toLocaleString()
+          .toISOString()
           .slice(0, 19)
           .replace("T", " ");
         await userQuery.updateResetPasswordExpires(

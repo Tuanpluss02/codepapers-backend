@@ -99,29 +99,37 @@ exports.authenticateRefreshToken = async (req, res, next) => {
 };
 
 exports.authenticateAccessToken = async (req, res, next) => {
-  const accessToken = req.headers.authorization.split(" ")[1];
-  const isNotValidToken = await tokenQuery.isValidToken(accessToken);
-  if (isNotValidToken) {
-    return res
-      .status(HTTPStatusCode.Unauthorized)
-      .send("Access token is blacklisted");
-  }
-
   try {
-    verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    const accessToken = req.headers.authorization.split(" ")[1];
+    const isNotValidToken = await tokenQuery.isValidToken(accessToken);
+    if (isNotValidToken) {
+      return res
+        .status(HTTPStatusCode.Unauthorized)
+        .send("Access token is blacklisted");
+    }
+    try {
+      verifyToken(accessToken, process.env.ACCESS_TOKEN_SECRET);
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(HTTPStatusCode.Unauthorized)
+        .send("Access token expired");
+    }
+    const id = getPayloadFromToken(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET
+    )._id;
+
+    const dataQuery = await userQuery.getUserById(id);
+    if (dataQuery.length === 0) {
+      return res
+        .status(HTTPStatusCode.Unauthorized)
+        .send("Invalid access token");
+    }
+    req.user = dataQuery;
+    next();
   } catch (error) {
     console.log(error);
-    return res.status(HTTPStatusCode.Unauthorized).send("Access token expired");
-  }
-  const id = getPayloadFromToken(
-    accessToken,
-    process.env.ACCESS_TOKEN_SECRET
-  )._id;
-
-  const dataQuery = await userQuery.getUserById(id);
-  if (dataQuery.length === 0) {
     return res.status(HTTPStatusCode.Unauthorized).send("Invalid access token");
   }
-  req.user = dataQuery;
-  next();
 };

@@ -8,6 +8,10 @@ const rootDir = require("./app/utils/path");
 const multer = require("multer");
 const authRouter = require("./app/routes/auth.route");
 const postRouter = require("./app/routes/post.route");
+const followRouter = require("./app/routes/follow.route");
+const commentRouter = require("./app/routes/comment.route");
+const chatRouter = require("./app/routes/chat.route");
+
 const commentRouter = require("./app/routes/comment.route");
 const { diskStorage, fileFilter } = require("./app/utils/multerConfig");
 
@@ -19,13 +23,20 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(cors());
 
-app.use(express.static(path.join(rootDir, "app", "public")));
-
 app.use(
   multer({ storage: diskStorage, fileFilter: fileFilter }).single("avatar")
 );
+
+app.use(
+  "/avatar",
+  express.static(path.join(rootDir, "app", "public", "avatar"))
+);
+
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
+app.use("/follow", followRouter);
+app.use("/comment", commentRouter);
+app.use("/chat", chatRouter);
 app.use("/comment", commentRouter);
 
 app.listen(3000, () => {

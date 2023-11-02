@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
 const postQuery = require("../modules/post.query.js");
 const date = require("../utils/convertDate");
+const date = require("../utils/convertDate");
 
 exports.postController = {
   createNewPost: async (req, res) => {
@@ -9,6 +10,8 @@ exports.postController = {
       console.log(req.user.user_id);
       const user_id = req.user.user_id;
       const post_id = uuidv4();
+      const posted_at = date.getNow();
+      const { title, body } = req.body;
       const posted_at = date.getNow();
       const { title, body } = req.body;
       const newpost = await postQuery.createPost(
