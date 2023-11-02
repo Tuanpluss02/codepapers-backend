@@ -32,6 +32,11 @@ exports.followController = {
     try {
       const user = req.user;
       const { followed_id } = req.body;
+      if (user.user_id === followed_id) {
+        return res.status(HTTPStatusCode.BadRequest).json({
+          message: "You can not follow yourself",
+        });
+      }
       const isFollowed = await followQuery.isFollowed(
         user.user_id,
         followed_id
