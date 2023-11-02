@@ -19,9 +19,9 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: hello
-      DB_NAME: codepapers
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
 
   ngrok:
     image: wernight/ngrok
