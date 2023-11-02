@@ -1,6 +1,6 @@
 const { validator } = require("../utils/validator");
 const HTTPStatusCode = new (require("../common/constants/HttpStatusCode"))();
-
+const { v4: uuidv4 } = require("uuid");
 // Middleware kiểm tra body request
 exports.validateReqBody = (req, res, next) => {
   const { email, password, full_name } = req.body;
@@ -39,3 +39,9 @@ exports.isValidID = (req, res, next) => {
   req.body.id = id;
   return next();
 };
+
+exports.generateUserID = async (req, res, next) => { 
+  const user_id = uuidv4();
+  req.body.user_id = user_id;
+  return next();
+}

@@ -1,8 +1,7 @@
 const express = require("express");
 const authRouter = express.Router();
 const { authController } = require("../controllers/auth.controller.js");
-const { validateReqBody } = require("../middlewares/requestValidate.js");
-
+const { validateReqBody,generateUserID } = require("../middlewares/requestValidate.js");
 const {
   authenticatePassword,
   generateTokens,
@@ -15,7 +14,8 @@ authRouter.post(
   generateTokens,
   authController.login
 );
-authRouter.post("/register", validateReqBody, authController.register);
+
+authRouter.post("/register", validateReqBody , authController.register);
 authRouter.post("/verify", authController.verify);
 authRouter.post("/refresh", authController.refresh);
 authRouter.post("/logout", authController.logout);

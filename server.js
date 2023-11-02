@@ -25,6 +25,7 @@ app.use(cors());
 app.use(
   multer({ storage: diskStorage, fileFilter: fileFilter }).single("avatar")
 );
+
 app.use(
   "/avatar",
   express.static(path.join(rootDir, "app", "public", "avatar"))
