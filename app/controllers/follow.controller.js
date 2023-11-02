@@ -3,6 +3,20 @@ const followQuery = require("../modules/follow.query");
 
 exports.followController = {
   getFollowers: async (req, res) => {
+    /*
+      #swagger.tags = ['Follow']
+      #swagger.summary = 'Get all followers'
+      #swagger.description = 'Enpoint to get all followers'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+    */
     try {
       const user = req.user;
       const listFolowers = await followQuery.getFollowers(user.user_id);
@@ -16,6 +30,20 @@ exports.followController = {
     }
   },
   getFollowings: async (req, res) => {
+    /*
+      #swagger.tags = ['Follow']
+      #swagger.summary = 'Get all following users'
+      #swagger.description = 'Endpoint to get all following users'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+    */
     try {
       const user = req.user;
       const listFolowing = await followQuery.getFollowings(user.user_id);
@@ -29,6 +57,29 @@ exports.followController = {
     }
   },
   follow: async (req, res) => {
+    /*
+      #swagger.tags = ['Follow']
+      #swagger.summary = 'Follow a user'
+      #swagger.description = 'Enpoint to follow a user'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              "$ref": "#/components/schemas/Follow"
+            }
+          }
+        }
+      }
+    */
     try {
       const user = req.user;
       const { followed_id } = req.body;
@@ -58,6 +109,29 @@ exports.followController = {
   },
 
   unfollow: async (req, res) => {
+    /*
+      #swagger.tags = ['Follow']
+      #swagger.summary = 'Unfollow a user'
+      #swagger.description = 'Enpoint to unfollow a user'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              "$ref": "#/components/schemas/Follow"
+            }
+          }
+        }
+      }
+    */
     try {
       const user = req.user;
       const { followed_id } = req.body;

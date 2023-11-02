@@ -103,12 +103,12 @@ exports.deleteComment = async (comment_id) => {
         console.log(err);
         reject(err);
       } else {
-        db.query(sql_comment, values, (err) => {
+        db.query(sql_comment_like, values, (err) => {
           if (err) {
             console.log(err);
             reject(err);
           } else {
-            db.query(sql_comment_like, values, (err, result) => {
+            db.query(sql_comment, values, (err, result) => {
               if (err) {
                 console.log(err);
                 reject(err);

@@ -4,29 +4,36 @@ const { v4: uuidv4 } = require("uuid");
 const { getNow } = require("../utils/convertDate.js");
 
 exports.chatController = {
-  createConversation: async (req, res) => {
-    try {
-      const { conversation_name} = req.body;
-      const conversation_id = uuidv4();
-      const participant_id = uuidv4();
-      const created_at = getNow();
-      const result = await chatQuery.createConversation(
-        conversation_id,
-        conversation_name,
-        created_at
-      );
-      await chatQuery.joinConversation(participant_id, conversation_id, req.user.user_id);
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Create conversation successfully",
-        data: result,
-      });
-    } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
-    }
-  },
   joinConversation: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Join conversation'
+      #swagger.description = 'Endpoint to join conversation'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "conversation_id": {
+                  type: "string"
+                }
+              },
+              required: ["conversation_id"]
+            }
+          }
+        }
+      }
+    */
     try {
       const { conversation_id } = req.body;
       const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
@@ -51,7 +58,90 @@ exports.chatController = {
       });
     }
   },
+  createConversation: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Create conversation'
+      #swagger.description = 'Endpoint to create conversation'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "conversation_name": {
+                  type: "string",
+                  description: "Conversation name",
+                  example: "Group 1"
+                  
+                }
+              },
+              required: ["conversation_name"]
+            }
+          }
+        }
+      }
+    */
+    try {
+      const { conversation_name} = req.body;
+      const conversation_id = uuidv4();
+      const participant_id = uuidv4();
+      const created_at = getNow();
+      const result = await chatQuery.createConversation(
+        conversation_id,
+        conversation_name,
+        created_at
+      );
+      await chatQuery.joinConversation(participant_id, conversation_id, req.user.user_id);
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Create conversation successfully",
+        data: result,
+      });
+    } catch (error) {
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: error.message,
+      });
+    }
+  },
   leaveConversation: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Leave conversation'
+      #swagger.description = 'Endpoint to leave conversation'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "conversation_id": {
+                  type: "string"
+                }
+              },
+              required: ["conversation_id"]
+            }
+          }
+        }
+      }
+    */
     try {
       const { conversation_id } = req.body;
       const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
@@ -75,6 +165,38 @@ exports.chatController = {
     }
   },
   sendMessage: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Send message'
+      #swagger.description = 'Endpoint to send message'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "conversation_id": {
+                  type: "string"
+                },
+                "content": {
+                  type: "string"
+                }
+              },
+              required: ["conversation_id", "content"]
+            }
+          }
+        }
+      }
+    */
     try {
       const { conversation_id, content } = req.body;
       const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
@@ -103,6 +225,20 @@ exports.chatController = {
     }
   },
   getConversations: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Get conversations'
+      #swagger.description = 'Endpoint to get conversations'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+    */
     try {
       const result = await chatQuery.getConversations(req.user.user_id);
       console.log(result);
@@ -117,6 +253,35 @@ exports.chatController = {
     }
   },
   getMessages: async (req, res) => {
+    /*
+      #swagger.tags = ['Chat']
+      #swagger.summary = 'Get all messages in conversation'
+      #swagger.description = 'Endpoint to get messages'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "conversation_id": {
+                  type: "string"
+                }
+              },
+              required: ["conversation_id"]
+            }
+          }
+        }
+      }
+    */
     try {
       const { conversation_id } = req.body;
       const result = await chatQuery.getMessages(conversation_id);

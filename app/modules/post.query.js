@@ -73,21 +73,67 @@ exports.createPostUser = async (user_id, post_id) => {
 };
 
 exports.deletePost = async (post_id) => {
-  const sql =
-    "DELETE posts, comments, user_posts, user_comment \
-    FROM posts \
-    LEFT JOIN comments ON posts.post_id = comments.post_id \
-    LEFT JOIN user_posts ON posts.post_id = user_posts.post_id\
-    LEFT JOIN user_comment ON posts.post_id = user_comment.post_id\
-    WHERE posts.post_id = ?";
+  const sql1 =  "DELETE pl FROM post_likes pl \
+                  JOIN posts p ON pl.post_id = p.post_id \
+                  WHERE p.post_id = ?";
+  const sql2 = "DELETE up FROM user_posts up \
+                JOIN posts p ON up.post_id = p.post_id \
+                WHERE p.post_id = ?";
+  const sql3 = "DELETE cl FROM comment_likes cl \
+                JOIN user_comment uc ON cl.comment_id = uc.comment_id \
+                JOIN posts p ON uc.post_id = p.post_id \
+                WHERE p.post_id = ?";
+  const sql4 = "DELETE c FROM comments c \
+                JOIN user_comment uc ON c.comment_id = uc.comment_id \
+                JOIN posts p ON uc.post_id = p.post_id  \
+                WHERE p.post_id = ?";
+  const sql5 = "DELETE uc FROM user_comment uc \
+                JOIN posts p ON uc.post_id = p.post_id \
+                WHERE p.post_id = ?";
+  const sql6 = "DELETE FROM posts WHERE post_id = ?";
   const values = [post_id];
   const result = await new Promise((resolve, reject) => {
-    db.query(sql, values, (err, result) => {
+    db.query(sql1, values, (err) => {
       if (err) {
         console.error(err);
         reject(err);
       } else {
-        resolve(result);
+        db.query(sql2, values, (err) => {
+          if (err) {
+            console.error(err);
+            reject(err);
+          } else {
+            db.query(sql3, values, (err) => {
+              if (err) {
+                console.error(err);
+                reject(err);
+              } else {
+                db.query(sql4, values, (err) => {
+                  if (err) {
+                    console.error(err);
+                    reject(err);
+                  } else {
+                    db.query(sql5, values, (err) => {
+                      if (err) {
+                        console.error(err);
+                        reject(err);
+                      } else {
+                        db.query(sql6, values, (err, result) => {
+                          if (err) {
+                            console.error(err);
+                            reject(err);
+                          } else {
+                            resolve(result);
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        })
       }
     });
   });
