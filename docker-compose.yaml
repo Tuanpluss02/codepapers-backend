@@ -1,4 +1,3 @@
-
 version: '3.8'
 
 services:
@@ -20,6 +19,11 @@ services:
       MYSQL_DATABASE: codepapers
     volumes:
       - db_data:/var/lib/mysql
+  ngrok:
+    image: wernight/ngrok
+    command: ngrok http app:3000
+    ports:
+      - "4040:4040"
 
 volumes:
   db_data:
