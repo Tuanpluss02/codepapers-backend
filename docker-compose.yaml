@@ -1,0 +1,25 @@
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: hello
+      DB_NAME: codepapers
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: hello
+      MYSQL_DATABASE: codepapers
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
