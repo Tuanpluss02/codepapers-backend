@@ -12,13 +12,14 @@ const followRouter = require("./app/routes/follow.route");
 const commentRouter = require("./app/routes/comment.route");
 const chatRouter = require("./app/routes/chat.route");
 
+const commentRouter = require("./app/routes/comment.route");
 const { diskStorage, fileFilter } = require("./app/utils/multerConfig");
 
 const swaggerFile = require("./swagger_output.json");
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(cors());
 
@@ -36,6 +37,7 @@ app.use("/post", postRouter);
 app.use("/follow", followRouter);
 app.use("/comment", commentRouter);
 app.use("/chat", chatRouter);
+app.use("/comment", commentRouter);
 
 app.listen(3000, () => {
   console.log(

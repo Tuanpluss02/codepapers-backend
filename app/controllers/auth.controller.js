@@ -19,6 +19,18 @@ require("dotenv").config();
 
 exports.authController = {
   login: async (req, res) => {
+    /* #swagger.tags = ['Auth'] 
+    #swagger.description = 'Endpoint to login.'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            $ref: "#/definitions/SignIn"
+          }
+        }
+      }
+    } */
     const accessToken = req.accessToken;
     const refreshToken = req.refreshToken;
     const user = req.user;
@@ -31,6 +43,48 @@ exports.authController = {
   },
 
   register: async (req, res) => {
+    /*#swagger.tags = ['Auth']
+    #swagger.description = 'Endpoint to register account.'
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            "type": "object",
+            "properties": {
+              "full_name": {
+                "type": "string",
+                "example": "Nguyen Van A"
+              },
+              "email": {
+                "type": "string",
+                "example": "nguyenvana@gmail.com"
+              },
+              "password": {
+                "type": "string",
+                "example": "Abc123!@#"
+              },
+              "date_of_birth": {
+                "type": "string",
+                "example": "2000-01-01"
+              },
+              "avatar": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "required": [
+              "full_name",
+              "email",
+              "password",
+              "date_of_birth",
+              "avatar"
+            ]
+          }
+        }
+      }
+    }
+  */
     let { email, full_name, password, date_of_birth } = req.body;
     const avatar = req.file;
     if (!avatar) {
@@ -123,6 +177,8 @@ exports.authController = {
     }
     const accessToken = authServices.generateToken(
       payload,
+      process.env.ACCESS_TOKEN_SECRET,
+      process.env.ACCESS_TOKEN_LIFE.toString()
       process.env.ACCESS_TOKEN_SECRET,
       process.env.ACCESS_TOKEN_LIFE.toString()
     );

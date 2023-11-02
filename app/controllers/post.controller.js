@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require("uuid");
 const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
 const postQuery = require("../modules/post.query.js");
 const date = require("../utils/convertDate");
+const date = require("../utils/convertDate");
 
 exports.postController = {
   createNewPost: async (req, res) => {
@@ -9,6 +10,8 @@ exports.postController = {
       console.log(req.user.user_id);
       const user_id = req.user.user_id;
       const post_id = uuidv4();
+      const posted_at = date.getNow();
+      const { title, body } = req.body;
       const posted_at = date.getNow();
       const { title, body } = req.body;
       const newpost = await postQuery.createPost(
@@ -59,18 +62,50 @@ exports.postController = {
       });
     }
   },
-  getPostbyID: async (req, res) => {
+  managePostbyID: async (req, res) => {
     try {
-      const post_id = req.params.post_id;
-      const result = await postQuery.getPostbyID(post_id);
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Get post failed",
+      const query = req.query;
+      if (query?.like) {
+        if (query.like === "true") {
+          req.method = "POST";
+          const post_id = req.params.post_id;
+          const user_id = req.user.user_id;
+          const result = await postQuery.likePost(user_id, post_id);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Like post failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Like post successful",
+          });
+        } else if (query.like === "false") {
+          req.method = "DELETE";
+          const post_id = req.params.post_id;
+          const user_id = req.user.user_id;
+          const result = await postQuery.unlikePost(user_id, post_id);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Unlike post failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Unlike post successful",
+          });
+        }
+      } else {
+        req.method = "GET";
+        const post_id = req.params.post_id;
+        const result = await postQuery.getPostbyID(post_id);
+        if (!result) {
+          return res.status(HTTPStatusCode.InternalServerError).json({
+            message: "Get post failed",
+          });
+        }
+        return res.status(HTTPStatusCode.OK).json({
+          result,
         });
       }
-      return res.status(HTTPStatusCode.OK).json({
-        result,
-      });
     } catch (error) {
       console.error(error);
       return res.status(HTTPStatusCode.InternalServerError).json({
@@ -146,25 +181,6 @@ exports.postController = {
       });
     }
   },
-  getCommentInPost: async (req, res) => {
-    try {
-      const post_id = req.params.post_id;
-      const result = await postQuery.getComment(post_id);
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Get comment failed",
-        });
-      }
-      return res.status(HTTPStatusCode.OK).json({
-        result,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get comment failed",
-      });
-    }
-  },
   updateComment: async (req, res) => {
     try {
       const comment_id = req.params.comment_id;
@@ -184,5 +200,5 @@ exports.postController = {
         message: "Update comment failed",
       });
     }
-  },
+  }
 };

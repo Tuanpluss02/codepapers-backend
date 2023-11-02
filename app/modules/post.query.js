@@ -19,7 +19,12 @@ exports.getPosts = async (user_id) => {
   return result;
 };
 exports.getPostbyID = async (post_id) => {
-  const sql = "SELECT * FROM posts WHERE post_id = ?";
+  const sql = "SELECT p.post_id, p.title, p.body, p.posted_at, COUNT(c.comment_id) AS comment_count, COUNT(pl.like_id) AS like_count, GROUP_CONCAT(pl.user_id) AS liked_users FROM posts p \
+                LEFT JOIN user_comment uc ON uc.post_id = p.post_id \
+                LEFT JOIN comments c ON c.comment_id = uc.comment_id \
+                LEFT JOIN post_likes pl ON pl.post_id = p.post_id \
+                WHERE p.post_id = ? \
+                GROUP BY p.post_id;";
   const values = [post_id];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -96,6 +101,38 @@ exports.updatePost = async (post_id, title, body) => {
     db.query(sql, values, (err, result) => {
       if (err) {
         console.error(err);
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+  return result;
+};
+
+exports.likePost = async (user_id, post_id) => {
+  const sql = "INSERT INTO post_likes (user_id, post_id) VALUES (?, ?)";
+  const values = [user_id, post_id];
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+  return result;
+};
+
+exports.unlikePost = async (user_id, post_id) => {
+  const sql = "DELETE FROM post_likes WHERE user_id = ? AND post_id = ?";
+  const values = [user_id, post_id];
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.log(err);
         reject(err);
       } else {
         resolve(result);
