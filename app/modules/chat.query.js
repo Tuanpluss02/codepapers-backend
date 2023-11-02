@@ -182,3 +182,71 @@ exports.getPaticipants = async (conversation_id) => {
   });
   return result;
 };
+
+exports.updateMessage = async (message_id, sender_id, content) => { 
+  try {
+    const sql =
+      "UPDATE messages SET content = ? WHERE message_id = ? AND sender_id = ?";
+    const values = [content, message_id, sender_id];
+    const result = await new Promise((resolve, reject) => {
+      db.query(sql, values, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+exports.deleteMessage = async (message_id, sender_id) => {
+  try {
+    const sql =
+      "DELETE FROM messages WHERE message_id = ? AND sender_id = ?";
+    const values = [message_id, sender_id];
+    const result = await new Promise((resolve, reject) => {
+      db.query(sql, values, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+exports.deleteConversation = async (conversation_id) => {
+  try {
+    const sql =
+      "DELETE FROM conversations WHERE conversation_id = ?";
+    const values = [conversation_id];
+    const result = await new Promise((resolve, reject) => {
+      db.query(sql, values, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+
