@@ -76,8 +76,15 @@ exports.chatController = {
   },
   sendMessage: async (req, res) => {
     try {
-      const { conversation_id, content, created_at } = req.body;
+      const { conversation_id, content } = req.body;
+      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
+      if (!isJoined) { 
+        return res.status(HTTPStatusCode.BadRequest).json({
+          message: "User not in conversation",
+        });
+      }
       const message_id = uuidv4();
+      const created_at = getNow();
       const result = await chatQuery.sendMessage(
         conversation_id,
         req.user.user_id,
@@ -98,6 +105,7 @@ exports.chatController = {
   getConversations: async (req, res) => {
     try {
       const result = await chatQuery.getConversations(req.user.user_id);
+      console.log(result);
       return res.status(HTTPStatusCode.OK).json({
         message: "Get conversations successfully",
         data: result,

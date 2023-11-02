@@ -2,9 +2,9 @@ const db = require("../services/database.service.js");
 
 exports.getConversations = async (user_id) => {
   const sql =
-    "SELECT c.conversation_id, c.conversation_name, m.content, m.sent_at \
+    "SELECT c.conversation_id, c.conversation_name, m.content AS last_message, m.sent_at \
     FROM conversations c \
-    JOIN messages m ON c.conversation_id = m.conversation_id \
+    LEFT JOIN messages m ON c.conversation_id = m.conversation_id \
     JOIN participants p ON c.conversation_id = p.conversation_id \
     WHERE p.user_id = ?  \
     ORDER BY m.sent_at ASC;";
@@ -15,7 +15,7 @@ exports.getConversations = async (user_id) => {
         console.log(err);
         reject(err);
       } else {
-        resolve();
+        resolve(result);
       }
     });
   });
@@ -114,7 +114,7 @@ exports.sendMessage = async (
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        resolve();
       }
     });
   });
@@ -123,9 +123,9 @@ exports.sendMessage = async (
 
 exports.getMessages = async (conversation_id) => {
   const sql =
-    "SELECT m.message_id, m.content, m.sent_at, u.user_id, u.full_name \
+    "SELECT m.message_id, m.content, m.sent_at, u.user_id as sender_id, u.full_name as sender_name \
         FROM messages m \
-        JOIN users u ON m.user_id = u.user_id \
+        JOIN users u ON m.sender_id = u.user_id \
         WHERE m.conversation_id = ? \
         ORDER BY m.sent_at ASC;";
   const values = [conversation_id];
