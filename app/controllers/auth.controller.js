@@ -39,7 +39,8 @@ exports.authController = {
       });
     }
     const profile_avatar = avatar.path;
-    console.log(req.file);
+    const relativePath = profile_avatar.split("public")[1];
+    const profile_avatar_res = relativePath.replace(/\\/g, "/");
     try {
       const userList = await userQuery.getUsers(email);
       if (userList.length > 0) {
@@ -47,7 +48,7 @@ exports.authController = {
           message: "Email already exists",
         });
       }
-      const user_id = uuidv4();
+      const user_id = req.body.user_id;
       const hashedPassword = await authServices.hashPassword(password);
       password = hashedPassword;
       const createUser = await userQuery.createUser(
@@ -55,7 +56,7 @@ exports.authController = {
         full_name,
         email,
         password,
-        profile_avatar,
+        profile_avatar_res,
         date_of_birth
       );
       if (!createUser) {

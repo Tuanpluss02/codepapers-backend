@@ -1,14 +1,17 @@
 const rootDir = require("./path");
 const multer = require("multer");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const diskStorage = multer.diskStorage({
   destination(req, file, callback) {
     callback(null, path.join(rootDir, "app", "public", "avatar"));
   },
   filename(req, file, callback) {
-    const date = new Date().toISOString().replace(/:/g, "_").replace(/\./g, "");
-    callback(null, `${date}${file.originalname}`);
+    const user_id = uuidv4();
+    const ext = path.extname(file.originalname);
+    req.body.user_id = user_id;
+    callback(null, `${user_id}${ext}`);
   },
 });
 const fileFilter = (req, file, callback) => {
