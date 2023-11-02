@@ -36,7 +36,7 @@ exports.commentController = {
   getCommentInPost: async (req, res) => {
     try {
       const post_id = req.params.post_id;
-      const result = await commentQuery.getComment(post_id);
+      const result = await commentQuery.getCommentInPost(post_id);
       if (!result) {
         return res.status(HTTPStatusCode.InternalServerError).json({
           message: "Get comment failed",
@@ -52,42 +52,83 @@ exports.commentController = {
       });
     }
   },
-  updateComment: async (req, res) => {
+  manageComment: async (req, res) => {
     try {
-      const comment_id = req.params.comment_id;
-      const { content } = req.body;
-      const result = await commentQuery.updateComment(comment_id, content);
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Update comment failed",
+      const query = req.query;
+      if (query?.like) {
+        if (query.like === "true") {
+          req.method = "POST";
+          const comment_id = req.params.comment_id;
+          const user_id = req.user.user_id;
+          const result = await commentQuery.likeComment(user_id, comment_id);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Like comment failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Like comment successful",
+          });
+        } else if (query.like === "false") {
+          req.method = "DELETE";
+          const comment_id = req.params.comment_id;
+          const user_id = req.user.user_id;
+          const result = await commentQuery.unlikeComment(user_id, comment_id);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Unlike comment failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Unlike comment successful",
+          });
+        }
+      } else if (query?.update) {
+        if (query.update === "true") {
+          req.method = "PATCH";
+          const comment_id = req.params.comment_id;
+          const { content } = req.body;
+          const result = await commentQuery.updateComment(comment_id, content);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Update comment failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Update comment successful",
+          });
+        }
+      } else if (query?.delete) {
+        if (query.delete === "true") {
+          req.method = "DELETE";
+          const comment_id = req.params.comment_id;
+          const result = await commentQuery.deleteComment(comment_id);
+          if (!result) {
+            return res.status(HTTPStatusCode.InternalServerError).json({
+              message: "Delete comment failed",
+            });
+          }
+          return res.status(HTTPStatusCode.OK).json({
+            message: "Delete comment successful",
+          });
+        }
+      } else {
+        req.method = "GET";
+        const comment_id = req.params.comment_id;
+        const result = await commentQuery.getCommentById(comment_id);
+        if (!result) {
+          return res.status(HTTPStatusCode.InternalServerError).json({
+            message: "Get comment failed",
+          });
+        }
+        return res.status(HTTPStatusCode.OK).json({
+          result,
         });
       }
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Update comment successful",
-      });
     } catch (error) {
       console.error(error);
       return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Update comment failed",
-      });
-    }
-  },
-  deleteComment: async (req, res) => {
-    try {
-      const comment_id = req.params.comment_id;
-      const result = await commentQuery.deleteComment(comment_id);
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Delete comment failed",
-        });
-      }
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Delete comment successful",
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Delete comment failed",
+        message: "Get comment failed",
       });
     }
   },

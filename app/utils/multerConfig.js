@@ -1,10 +1,8 @@
-const rootDir = require("./path");
 const multer = require("multer");
-const path = require("path");
 
 const diskStorage = multer.diskStorage({
   destination(req, file, callback) {
-    callback(null, path.join(rootDir, "app", "public", "avatar"));
+    callback(null, "app/public/avatar");
   },
   filename(req, file, callback) {
     const date = new Date().toISOString().replace(/:/g, "_").replace(/\./g, "");

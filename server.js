@@ -13,23 +13,20 @@ const { diskStorage, fileFilter } = require("./app/utils/multerConfig");
 
 const swaggerFile = require("./swagger_output.json");
 
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(cors());
+
+app.use(express.static(path.join(rootDir, "app", "public")));
 
 app.use(
   multer({ storage: diskStorage, fileFilter: fileFilter }).single("avatar")
 );
-app.use(
-  "/avatar",
-  express.static(path.join(rootDir, "app", "public", "avatar"))
-);
-
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
-app.use("/comment", commentRouter)
+app.use("/comment", commentRouter);
 
 app.listen(3000, () => {
   console.log(
