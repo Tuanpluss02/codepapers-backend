@@ -6,7 +6,6 @@ create table if not exists blacklist_token
 create table if not exists comment_likes
 (
     like_id    int auto_increment
-        constraint `PRIMARY`
         primary key,
     comment_id varchar(50) not null,
     user_id    varchar(50) not null
@@ -27,8 +26,7 @@ create table if not exists comments
 );
 
 alter table comments
-    add constraint `PRIMARY`
-        primary key (comment_id);
+    add primary key (comment_id);
 
 alter table comment_likes
     add constraint comment_likes_ibfk_1
@@ -46,8 +44,7 @@ create table if not exists conversations
 );
 
 alter table conversations
-    add constraint `PRIMARY`
-        primary key (conversation_id);
+    add primary key (conversation_id);
 
 create table if not exists followers
 (
@@ -56,8 +53,7 @@ create table if not exists followers
 );
 
 alter table followers
-    add constraint `PRIMARY`
-        primary key (followed_id, follower_id);
+    add primary key (followed_id, follower_id);
 
 create table if not exists messages
 (
@@ -65,7 +61,7 @@ create table if not exists messages
     conversation_id varchar(50) not null,
     sender_id       varchar(50) not null,
     content         text        not null,
-    timestamp       datetime    not null
+    sent_at         datetime    not null
 );
 
 create index conversation_id
@@ -75,8 +71,7 @@ create index sender_id
     on messages (sender_id);
 
 alter table messages
-    add constraint `PRIMARY`
-        primary key (message_id);
+    add primary key (message_id);
 
 alter table messages
     add constraint messages_ibfk_1
@@ -96,8 +91,7 @@ create index user_id
     on participants (user_id);
 
 alter table participants
-    add constraint `PRIMARY`
-        primary key (participant_id);
+    add primary key (participant_id);
 
 alter table participants
     add constraint participants_ibfk_1
@@ -106,7 +100,6 @@ alter table participants
 create table if not exists post_likes
 (
     like_id int auto_increment
-        constraint `PRIMARY`
         primary key,
     post_id varchar(50) not null,
     user_id varchar(50) not null
@@ -128,8 +121,7 @@ create table if not exists posts
 );
 
 alter table posts
-    add constraint `PRIMARY`
-        primary key (post_id);
+    add primary key (post_id);
 
 alter table post_likes
     add constraint post_likes_ibfk_1
@@ -173,8 +165,7 @@ create table if not exists user_posts
 );
 
 alter table user_posts
-    add constraint `PRIMARY`
-        primary key (user_id, post_id);
+    add primary key (user_id, post_id);
 
 alter table user_posts
     add constraint user_posts_posts_post_id_fk
@@ -194,8 +185,7 @@ create table if not exists users
 );
 
 alter table users
-    add constraint `PRIMARY`
-        primary key (user_id);
+    add primary key (user_id);
 
 alter table comment_likes
     add constraint comment_likes_ibfk_2
@@ -236,4 +226,5 @@ alter table users
 alter table users
     add constraint user_id_UNIQUE
         unique (user_id);
+
 
