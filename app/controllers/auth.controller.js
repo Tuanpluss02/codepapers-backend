@@ -179,8 +179,6 @@ exports.authController = {
       payload,
       process.env.ACCESS_TOKEN_SECRET,
       process.env.ACCESS_TOKEN_LIFE.toString()
-      process.env.ACCESS_TOKEN_SECRET,
-      process.env.ACCESS_TOKEN_LIFE.toString()
     );
     if (!accessToken) {
       return res

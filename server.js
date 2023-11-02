@@ -12,7 +12,6 @@ const followRouter = require("./app/routes/follow.route");
 const commentRouter = require("./app/routes/comment.route");
 const chatRouter = require("./app/routes/chat.route");
 
-const commentRouter = require("./app/routes/comment.route");
 const { diskStorage, fileFilter } = require("./app/utils/multerConfig");
 
 const swaggerFile = require("./swagger_output.json");
