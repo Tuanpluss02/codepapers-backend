@@ -1,20 +1,21 @@
 const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
 const chatQuery = require("../modules/chat.query");
 const { v4: uuidv4 } = require("uuid");
-const { timestampToDateTime } = require("../utils/convertDate.js");
+const { getNow } = require("../utils/convertDate.js");
 
 exports.chatController = {
   createConversation: async (req, res) => {
     try {
-      const { conversation_name, created_at } = req.body;
+      const { conversation_name} = req.body;
       const conversation_id = uuidv4();
-      const created_at_sql = timestampToDateTime(created_at);
+      const participant_id = uuidv4();
+      const created_at = getNow();
       const result = await chatQuery.createConversation(
         conversation_id,
         conversation_name,
-        created_at_sql
+        created_at
       );
-      await chatQuery.joinConversation(conversation_id, req.user.user_id);
+      await chatQuery.joinConversation(participant_id, conversation_id, req.user.user_id);
       return res.status(HTTPStatusCode.OK).json({
         message: "Create conversation successfully",
         data: result,
@@ -28,7 +29,15 @@ exports.chatController = {
   joinConversation: async (req, res) => {
     try {
       const { conversation_id } = req.body;
+      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
+      if (isJoined) { 
+        return res.status(HTTPStatusCode.BadRequest).json({
+          message: "User already in conversation",
+        });
+      }
+      const participant_id = uuidv4();
       const result = await chatQuery.joinConversation(
+        participant_id,
         conversation_id,
         req.user.user_id
       );
@@ -45,6 +54,12 @@ exports.chatController = {
   leaveConversation: async (req, res) => {
     try {
       const { conversation_id } = req.body;
+      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
+      if (!isJoined) { 
+        return res.status(HTTPStatusCode.BadRequest).json({
+          message: "User not in conversation",
+        });
+      }
       const result = await chatQuery.leaveConversation(
         conversation_id,
         req.user.user_id

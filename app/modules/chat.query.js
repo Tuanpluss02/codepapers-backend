@@ -15,7 +15,7 @@ exports.getConversations = async (user_id) => {
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        resolve();
       }
     });
   });
@@ -32,23 +32,23 @@ exports.updateConversation = async (conversation_id, conversation_name) => {
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        resolve();
       }
     });
   });
 };
 
-exports.joinConversation = async (conversation_id, user_id) => {
+exports.joinConversation = async (participant_id, conversation_id, user_id) => {
   const sql =
-    "INSERT INTO participants (conversation_id, user_id) VALUES (?, ?)";
-  const values = [conversation_id, user_id];
+    "INSERT INTO participants (participant_id, conversation_id, user_id) VALUES (? ,?, ?)";
+  const values = [participant_id, conversation_id, user_id];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err) => {
       if (err) {
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        resolve();
       }
     });
   });
@@ -65,7 +65,7 @@ exports.leaveConversation = async (conversation_id, user_id) => {
         console.log(err);
         reject(err);
       } else {
-        resolve(result);
+        resolve();
       }
     });
   });
@@ -80,17 +80,22 @@ exports.createConversation = async (
   const sql =
     "INSERT INTO conversations (  conversation_id,  conversation_name,  created_at) VALUES (?, ?, ?)";
   const values = [conversation_id, conversation_name, created_at];
-  const result = await new Promise((resolve, reject) => {
-    db.query(sql, values, (err) => {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        // resolve(result);
-      }
+  try {
+    const result = await new Promise((resolve, reject) => {
+      db.query(sql, values, (err) => {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
-  });
-  return result;
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 };
 
 exports.sendMessage = async (
@@ -131,6 +136,27 @@ exports.getMessages = async (conversation_id) => {
         reject(err);
       } else {
         resolve(result);
+      }
+    });
+  });
+  return result;
+};
+
+exports.checkUserInConversation = async (conversation_id, user_id) => {
+  const sql =
+    "SELECT * FROM participants WHERE conversation_id = ? AND user_id = ?";
+  const values = [conversation_id, user_id];
+  const result = await new Promise((resolve, reject) => {
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.log(err);
+        reject(err);
+      } else {
+        if (result.length === 0) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
       }
     });
   });
