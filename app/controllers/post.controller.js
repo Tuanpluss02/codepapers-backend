@@ -4,7 +4,7 @@ const postQuery = require("../modules/post.query.js");
 const date = require("../utils/convertDate");
 
 exports.postController = {
-  createNewPost: async (req, res) => {
+  createNewPost: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Create post'
@@ -56,13 +56,12 @@ exports.postController = {
         result,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Create new post failed",
-      });
+      error.message = "Create new post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getPosts: async (req, res) => {
+  getPosts: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Get all personal posts'
@@ -90,13 +89,12 @@ exports.postController = {
         result,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get all posts failed",
-      });
+      error.message = "Get all posts failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getPostbyID: async (req, res) => {
+  getPostbyID: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Get detail post'
@@ -130,13 +128,12 @@ exports.postController = {
         result,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get post failed",
-      });
+      error.message = "Get post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  reactPost: async (req, res) => {
+  reactPost: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Like or unlike post'
@@ -195,13 +192,12 @@ exports.postController = {
         }
       }
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get post failed",
-      });
+      error.message = "Like or unlike post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  updatePost: async (req, res) => {
+  updatePost: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Update post'
@@ -244,13 +240,12 @@ exports.postController = {
         message: "Update post successful",
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Update post failed",
-      });
+      error.message = "Update post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  deletePost: async (req, res) => {
+  deletePost: async (req, res, next) => {
     /*
       #swagger.tags = ['Post']
       #swagger.summary = 'Delete post'
@@ -283,10 +278,9 @@ exports.postController = {
         message: "Delete post successful",
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Delete post failed",
-      });
+      error.message = "Delete post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
-  }
+  },
 };

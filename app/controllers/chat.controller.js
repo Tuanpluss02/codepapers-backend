@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getNow } = require("../utils/convertDate.js");
 
 exports.chatController = {
-  joinConversation: async (req, res) => {
+  joinConversation: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Join conversation'
@@ -53,12 +53,12 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Join conversation failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  createConversation: async (req, res) => {
+  createConversation: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Create conversation'
@@ -107,12 +107,12 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Create conversation failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  leaveConversation: async (req, res) => {
+  leaveConversation: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Leave conversation'
@@ -159,12 +159,12 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Leave conversation failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  sendMessage: async (req, res) => {
+  sendMessage: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Send message'
@@ -219,12 +219,12 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Send message failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getConversations: async (req, res) => {
+  getConversations: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Get conversations'
@@ -247,12 +247,12 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Get conversations failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getMessages: async (req, res) => {
+  getMessages: async (req, res, next) => {
     /*
       #swagger.tags = ['Chat']
       #swagger.summary = 'Get all messages in conversation'
@@ -290,9 +290,9 @@ exports.chatController = {
         data: result,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Get messages failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error)
     }
   },
 };

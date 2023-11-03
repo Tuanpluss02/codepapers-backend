@@ -103,7 +103,7 @@ exports.updateRefreshToken = async (user_id, refreshToken) => {
 
 exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
   const sql =
-    "UPDATE users SET access_token = ?, refresh_token = ? WHERE user_id = ?";
+    "UPDATE users SET refresh_token = ? WHERE user_id = ?";
   const values = [access_token, refresh_token, user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -118,7 +118,7 @@ exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
 };
 
 exports.getBlacklistToken = async (user_id) => {
-  const sql = "SELECT access_token, refresh_token FROM users WHERE user_id = ?";
+  const sql = "SELECT refresh_token FROM users WHERE user_id = ?";
   const values = [user_id];
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
