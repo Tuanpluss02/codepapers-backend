@@ -31,12 +31,11 @@ app.use(
   express.static(path.join(rootDir, "app", "public", "avatar"))
 );
 
-app.use("/auth", authRouter);
-app.use("/post", postRouter);
-app.use("/follow", followRouter);
-app.use("/comment", commentRouter);
-app.use("/chat", chatRouter);
-app.use("/comment", commentRouter);
+app.use(authRouter);
+app.use(postRouter);
+app.use(followRouter);
+app.use(commentRouter);
+app.use(chatRouter);
 
 app.listen(3000, () => {
   console.log(

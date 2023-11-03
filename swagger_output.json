@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/"
+      "url": "http://localhost:3000"
     }
   ],
   "tags": [
@@ -25,11 +25,12 @@
     }
   ],
   "paths": {
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": [
           "Auth"
         ],
+        "summary": "Login",
         "description": "Endpoint to login.",
         "responses": {
           "default": {
@@ -48,11 +49,12 @@
         }
       }
     },
-    "/register": {
+    "/auth/register": {
       "post": {
         "tags": [
           "Auth"
         ],
+        "summary": "Register",
         "description": "Endpoint to register account.",
         "responses": {
           "default": {
@@ -64,68 +66,122 @@
           "content": {
             "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/SignUp"
+                "type": "object",
+                "properties": {
+                  "full_name": {
+                    "type": "string",
+                    "example": "Nguyen Van A"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "nguyenvana@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Abc123!@#"
+                  },
+                  "date_of_birth": {
+                    "type": "string",
+                    "example": "yyyy-mm-dd"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "example": "avatar.jpg",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "full_name",
+                  "email",
+                  "password",
+                  "date_of_birth",
+                  "avatar"
+                ]
               }
             }
           }
         }
       }
     },
-    "/verify": {
+    "/auth/verify": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Verify user",
+        "description": "Endpoint to verify token.",
         "responses": {
           "default": {
             "description": ""
           }
         },
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "token": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
                   }
-                }
+                },
+                "required": [
+                  "token"
+                ]
               }
             }
           }
         }
       }
     },
-    "/refresh": {
+    "/auth/refresh": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get new access token",
+        "description": "Endpoint to refresh token.",
         "responses": {
           "default": {
             "description": ""
           }
         },
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "refreshToken": {
-                    "example": "any"
+                  "token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
                   }
-                }
+                },
+                "required": [
+                  "token"
+                ]
               }
             }
           }
         }
       }
     },
-    "/logout": {
+    "/auth/logout": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout",
+        "description": "Endpoint to logout.",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -135,36 +191,54 @@
           "default": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/reset": {
+    "/auth/reset": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get token reset password",
+        "description": "Endpoint to get token reset password.",
         "responses": {
           "default": {
             "description": ""
           }
         },
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "email": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "example@gmail.com"
                   }
-                }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
         }
       }
     },
-    "/reset/{token}": {
+    "/auth/reset/{token}": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Reset password",
+        "description": "Endpoint to reset password.",
         "parameters": [
           {
             "name": "token",
@@ -172,7 +246,8 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Token you received in email to reset password"
           }
         ],
         "responses": {
@@ -181,28 +256,39 @@
           }
         },
         "requestBody": {
+          "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "password": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "Abc123!@#"
                   }
-                }
+                },
+                "required": [
+                  "password"
+                ]
               }
             }
           }
         }
       }
     },
-    "/get": {
+    "/post/get": {
       "get": {
-        "description": "",
+        "tags": [
+          "Post"
+        ],
+        "summary": "Get all personal posts",
+        "description": "Get all posts",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -212,16 +298,27 @@
           "default": {
             "description": ""
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/new": {
+    "/post/new": {
       "post": {
-        "description": "",
+        "tags": [
+          "Post"
+        ],
+        "summary": "Create post",
+        "description": "Create new post",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -232,126 +329,29 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "example": "any"
-                  },
-                  "body": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/Post"
               }
             }
-          }
-        }
-      }
-    },
-    "/{post_id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "post_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/update/{post_id}": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "post_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "example": "any"
-                  },
-                  "body": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/delete/{post_id}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "post_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
           }
         }
       }
     },
     "/post/{post_id}": {
-      "post": {
-        "description": "",
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Get detail post",
+        "description": "Get detail post by post_id",
         "parameters": [
           {
             "name": "post_id",
@@ -359,11 +359,14 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Enter post_id to get detail post"
           },
           {
             "name": "authorization",
             "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -374,23 +377,245 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Like or unlike post",
+        "description": "Like or unlike post",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Enter post_id to like or unlike post"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "like",
+            "in": "query",
+            "description": "Choose true to like post, false to unlike post",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Like or unlike post",
+        "description": "Like or unlike post",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Enter post_id to like or unlike post"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "like",
+            "in": "query",
+            "description": "Choose true to like post, false to unlike post",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/post/update/{post_id}": {
+      "put": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Update post",
+        "description": "Update post",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Enter post_id to update post"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "content": {
-                    "example": "any"
-                  }
-                }
+                "$ref": "#/components/schemas/Post"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post/delete/{post_id}": {
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "summary": "Delete post",
+        "description": "Delete post",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Enter post_id to delete post"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/comment/post/{post_id}": {
+      "post": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Post comment in post",
+        "description": "Post comment",
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Post id"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
               }
             }
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Get all comments in post",
+        "description": "Get comment in post",
         "parameters": [
           {
             "name": "post_id",
@@ -398,38 +623,14 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Post id"
           },
           {
             "name": "authorization",
             "in": "header",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/{comment_id}": {
-      "patch": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "comment_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "authorization",
-            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -440,23 +641,20 @@
             "description": ""
           }
         },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "content": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
+        "security": [
+          {
+            "bearerAuth": []
           }
-        }
-      },
-      "delete": {
-        "description": "",
+        ]
+      }
+    },
+    "/comment/{comment_id}": {
+      "get": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Get detail one comment",
+        "description": "Get comment by comment_id",
         "parameters": [
           {
             "name": "comment_id",
@@ -464,11 +662,14 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Comment id"
           },
           {
             "name": "authorization",
             "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -477,6 +678,608 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Like or unlike comment",
+        "description": "Like or unlike comment",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comment id"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "like",
+            "in": "query",
+            "description": "Choose true to like comment, false to unlike comment",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Like or unlike comment",
+        "description": "Like or unlike comment",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comment id"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "like",
+            "in": "query",
+            "description": "Choose true to like comment, false to unlike comment",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/comment/update/{comment_id}": {
+      "patch": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Update comment",
+        "description": "Update comment",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comment id"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Comment"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comment/delete/{comment_id}": {
+      "delete": {
+        "tags": [
+          "Comment"
+        ],
+        "summary": "Delete comment",
+        "description": "Delete comment",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comment id"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "delete",
+            "in": "query",
+            "description": "Choose true to delete comment",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/follow/followers": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Get all followers",
+        "description": "Enpoint to get all followers",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/follow/following": {
+      "get": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Get all following users",
+        "description": "Endpoint to get all following users",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/follow/new": {
+      "post": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Follow a user",
+        "description": "Enpoint to follow a user",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Follow"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/follow/unfollow": {
+      "post": {
+        "tags": [
+          "Follow"
+        ],
+        "summary": "Unfollow a user",
+        "description": "Enpoint to unfollow a user",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Follow"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/create": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Create conversation",
+        "description": "Endpoint to create conversation",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_name": {
+                    "type": "string",
+                    "description": "Conversation name",
+                    "example": "Group 1"
+                  }
+                },
+                "required": [
+                  "conversation_name"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/join": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Join conversation",
+        "description": "Endpoint to join conversation",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "conversation_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/leave": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Leave conversation",
+        "description": "Endpoint to leave conversation",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "conversation_id"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/send": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Send message",
+        "description": "Endpoint to send message",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_id": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "conversation_id",
+                  "content"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/getConversations": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get conversations",
+        "description": "Endpoint to get conversations",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/chat/getMessages": {
+      "get": {
+        "tags": [
+          "Chat"
+        ],
+        "summary": "Get all messages in conversation",
+        "description": "Endpoint to get messages",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Access token (not required if you lock authorize)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "conversation_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "conversation_id"
+                ]
+              }
+            }
           }
         }
       }
@@ -484,7 +1287,7 @@
   },
   "components": {
     "securitySchemes": {
-      "bearAuth": {
+      "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
       }
@@ -499,19 +1302,19 @@
           },
           "email": {
             "type": "string",
-            "example": "nguyenvana@gmail.com"
+            "example": "example@gmail.com"
           },
           "password": {
             "type": "string",
-            "example": "Abc123!@#"
+            "example": "Uppercase, lowercase, number, special character"
           },
           "date_of_birth": {
             "type": "string",
-            "example": "1999-01-01"
+            "example": "yyyy-mm-dd"
           },
           "avatar": {
             "type": "string",
-            "example": "$binary"
+            "example": "avatar.jpg"
           }
         },
         "required": [
@@ -526,7 +1329,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "nguyenvana@gmail.com"
+            "example": "example@gmail.com"
           },
           "password": {
             "type": "string",
@@ -543,7 +1346,7 @@
         "properties": {
           "email": {
             "type": "string",
-            "example": "nguyenvana@gmail.com"
+            "example": "example@gmail.com"
           }
         },
         "required": [
@@ -572,10 +1375,39 @@
         "properties": {
           "content": {
             "type": "string",
-            "example": "This is my comment"
+            "example": "This is example comment"
           }
         },
         "required": [
+          "content"
+        ]
+      },
+      "Follow": {
+        "type": "object",
+        "properties": {
+          "followed_id": {
+            "type": "string",
+            "example": "2r18541285412654"
+          }
+        },
+        "required": [
+          "followed_id"
+        ]
+      },
+      "Chat": {
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "example": "1324664821581"
+          },
+          "content": {
+            "type": "string",
+            "example": "This is example chat"
+          }
+        },
+        "required": [
+          "conversation_id",
           "content"
         ]
       }

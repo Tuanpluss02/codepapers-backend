@@ -3,30 +3,30 @@ const postRouter = express.Router();
 const { postController } = require("../controllers/post.controller.js");
 const { authenticateAccessToken } = require("../middlewares/authValidate.js");
 
-postRouter.get("/get", authenticateAccessToken, postController.getPosts);
-postRouter.post("/new", authenticateAccessToken, postController.createNewPost);
+postRouter.get("/post/get", authenticateAccessToken, postController.getPosts);
+postRouter.post("/post/new", authenticateAccessToken, postController.createNewPost);
 postRouter.get(
-  "/:post_id",
+  "/post/:post_id",
   authenticateAccessToken,
-  postController.managePostbyID
+  postController.getPostbyID
 );
 postRouter.post(
-  "/:post_id",
+  "/post/:post_id",
   authenticateAccessToken,
-  postController.managePostbyID
+  postController.reactPost
 );
 postRouter.delete(
-  "/:post_id",
+  "/post/:post_id",
   authenticateAccessToken,
-  postController.managePostbyID
+  postController.reactPost
 );
 postRouter.put(
-  "/update/:post_id",
+  "/post/update/:post_id",
   authenticateAccessToken,
   postController.updatePost
 );
 postRouter.delete(
-  "/delete/:post_id",
+  "/post/delete/:post_id",
   authenticateAccessToken,
   postController.deletePost
 );

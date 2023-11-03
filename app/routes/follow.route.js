@@ -5,18 +5,18 @@ const { followController } = require("../controllers/follow.controller.js");
 const { authenticateAccessToken } = require("../middlewares/authValidate.js");
 
 followRouter.get(
-  "/followers",
+  "/follow/followers",
   authenticateAccessToken,
   followController.getFollowers
 );
 followRouter.get(
-  "/following",
+  "/follow/following",
   authenticateAccessToken,
   followController.getFollowings
 );
-followRouter.post("/new", authenticateAccessToken, followController.follow);
+followRouter.post("/follow/new", authenticateAccessToken, followController.follow);
 followRouter.post(
-  "/unfollow",
+  "/follow/unfollow",
   authenticateAccessToken,
   followController.unfollow
 );

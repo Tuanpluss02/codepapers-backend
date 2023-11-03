@@ -4,39 +4,45 @@ const { commentController } = require("../controllers/comment.controller.js");
 const { authenticateAccessToken } = require("../middlewares/authValidate.js");
 
 commentRouter.post(
-  "/post/:post_id",
+  "/comment/post/:post_id",
   authenticateAccessToken,
   commentController.postComment
 );
 
 commentRouter.get(
-  "/post/:post_id",
+  "/comment/post/:post_id",
   authenticateAccessToken,
   commentController.getCommentInPost
 );
 
 commentRouter.get(
-  "/:comment_id",
+  "/comment/:comment_id",
   authenticateAccessToken,
-  commentController.manageComment
+  commentController.getCommentById
 );
 
 commentRouter.post(
-  "/:comment_id",
+  "/comment/:comment_id",
   authenticateAccessToken,
-  commentController.manageComment
-);
-
-commentRouter.patch(
-  "/:comment_id",
-  authenticateAccessToken,
-  commentController.manageComment
+  commentController.reactComment
 );
 
 commentRouter.delete(
-  "/:comment_id",
+  "/comment/:comment_id",
   authenticateAccessToken,
-  commentController.manageComment
+  commentController.reactComment
+);
+
+commentRouter.patch(
+  "/comment/update/:comment_id",
+  authenticateAccessToken,
+  commentController.updateComment
+);
+
+commentRouter.delete(
+  "/comment/delete/:comment_id",
+  authenticateAccessToken,
+  commentController.deleteComment
 );
 
 module.exports = commentRouter;

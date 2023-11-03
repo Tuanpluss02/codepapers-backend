@@ -5,30 +5,32 @@ const { chatController } = require("../controllers/chat.controller.js");
 const { authenticateAccessToken } = require("../middlewares/authValidate.js");
 
 chatRouter.post(
-  "/create",
+  "/chat/create",
   authenticateAccessToken,
   chatController.createConversation
 );
+
 chatRouter.post(
-  "/join",
+  "/chat/join",
   authenticateAccessToken,
   chatController.joinConversation
 );
+
 chatRouter.post(
-  "/leave",
+  "/chat/leave",
   authenticateAccessToken,
   chatController.leaveConversation
 );
-chatRouter.post("/send", authenticateAccessToken, chatController.sendMessage);
+chatRouter.post("/chat/send", authenticateAccessToken, chatController.sendMessage);
 
 chatRouter.get(
-  "/getConversations",
+  "/chat/getConversations",
   authenticateAccessToken,
   chatController.getConversations
 );
 
 chatRouter.get(
-  "/getMessages",
+  "/chat/getMessages",
   authenticateAccessToken,
   chatController.getMessages
 );

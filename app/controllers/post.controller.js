@@ -5,6 +5,29 @@ const date = require("../utils/convertDate");
 
 exports.postController = {
   createNewPost: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Create post'
+      #swagger.description = 'Create new post'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/Post"
+            }
+          }
+        }
+      }
+    */
     try {
       console.log(req.user.user_id);
       const user_id = req.user.user_id;
@@ -40,6 +63,20 @@ exports.postController = {
     }
   },
   getPosts: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Get all personal posts'
+      #swagger.description = 'Get all posts'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+    */
     try {
       const user_id = req.user.user_id;
 
@@ -59,7 +96,73 @@ exports.postController = {
       });
     }
   },
-  managePostbyID: async (req, res) => {
+  getPostbyID: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Get detail post'
+      #swagger.description = 'Get detail post by post_id'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.parameters['post_id'] = {
+        in: 'path',
+        description: 'Enter post_id to get detail post',
+        required: true,
+        type: 'string',
+      }
+    */
+    try {
+      req.method = "GET";
+      const post_id = req.params.post_id;
+      const result = await postQuery.getPostbyID(post_id);
+      if (!result) {
+        return res.status(HTTPStatusCode.InternalServerError).json({
+          message: "Get post failed",
+        });
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        result,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(HTTPStatusCode.InternalServerError).json({
+        message: "Get post failed",
+      });
+    }
+  },
+  reactPost: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Like or unlike post'
+      #swagger.description = 'Like or unlike post'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.parameters['post_id'] = {
+        in: 'path',
+        description: 'Enter post_id to like or unlike post',
+        required: true,
+        type: 'string',
+      }
+      #swagger.parameters['like'] = {
+        in: 'query',
+        description: "Choose true to like post, false to unlike post",
+        required: true,
+        type: 'boolean',
+      }
+    */
     try {
       const query = req.query;
       if (query?.like) {
@@ -90,18 +193,6 @@ exports.postController = {
             message: "Unlike post successful",
           });
         }
-      } else {
-        req.method = "GET";
-        const post_id = req.params.post_id;
-        const result = await postQuery.getPostbyID(post_id);
-        if (!result) {
-          return res.status(HTTPStatusCode.InternalServerError).json({
-            message: "Get post failed",
-          });
-        }
-        return res.status(HTTPStatusCode.OK).json({
-          result,
-        });
       }
     } catch (error) {
       console.error(error);
@@ -111,6 +202,35 @@ exports.postController = {
     }
   },
   updatePost: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Update post'
+      #swagger.description = 'Update post'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      }
+      #swagger.parameters['post_id'] = {
+        in: 'path',
+        description: 'Enter post_id to update post',
+        required: true,
+        type: 'string',
+      }
+      #swagger.requestBody = {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/Post"
+            }
+          }
+        }
+      }
+    */
     try {
       const post_id = req.params.post_id;
       const { title, body } = req.body;
@@ -131,6 +251,26 @@ exports.postController = {
     }
   },
   deletePost: async (req, res) => {
+    /*
+      #swagger.tags = ['Post']
+      #swagger.summary = 'Delete post'
+      #swagger.description = 'Delete post'
+      #swagger.security = [{
+        "bearerAuth": []
+      }]
+      #swagger.parameters['authorization'] = {
+        in: 'header',
+        description: 'Access token (not required if you lock authorize)',
+        required: false,
+        type: 'string',
+      } 
+      #swagger.parameters['post_id'] = {
+        in: 'path',
+        description: 'Enter post_id to delete post',
+        required: true,
+        type: 'string',
+      }
+    */
     try {
       const post_id = req.params.post_id;
       const result = await postQuery.deletePost(post_id);
@@ -146,55 +286,6 @@ exports.postController = {
       console.error(error);
       return res.status(HTTPStatusCode.InternalServerError).json({
         message: "Delete post failed",
-      });
-    }
-  },
-  postComment: async (req, res) => {
-    try {
-      const post_id = req.params.post_id;
-      const user_id = req.user.user_id;
-      const comment_at = date.getNow();
-      const comment_id = uuidv4();
-      const { content } = req.body;
-      const result = await postQuery.postComment(
-        post_id,
-        user_id,
-        comment_id,
-        content,
-        comment_at
-      );
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Post comment failed",
-        });
-      }
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Post comment successful",
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Post comment failed",
-      });
-    }
-  },
-  updateComment: async (req, res) => {
-    try {
-      const comment_id = req.params.comment_id;
-      const { content } = req.body;
-      const result = await postQuery.updateComment(comment_id, content);
-      if (!result) {
-        return res.status(HTTPStatusCode.InternalServerError).json({
-          message: "Update comment failed",
-        });
-      }
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Update comment successful",
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Update comment failed",
       });
     }
   }

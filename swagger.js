@@ -5,6 +5,8 @@ const endpointsFiles = [
   "./app/routes/auth.route.js",
   "./app/routes/post.route.js",
   "./app/routes/comment.route.js",
+  "./app/routes/follow.route.js",
+  "./app/routes/chat.route.js",
 ];
 
 const doc = {
@@ -15,7 +17,7 @@ const doc = {
   },
   servers: [
     {
-      url: "http://localhost:3000/",
+      url: "http://localhost:3000",
     },
   ],
   tags: [
@@ -35,38 +37,45 @@ const doc = {
   schemes: ["http", "https"],
   components: {
     securitySchemes: {
-      bearAuth: {
+      bearerAuth: {
         type: "http",
         scheme: "bearer",
-      },
+      }
     },
     schemas: {
       SignUp: {
         $full_name: "Nguyen Van A",
-        $email: "nguyenvana@gmail.com",
-        $password: "Abc123!@#",
-        $date_of_birth: "1999-01-01",
+        $email: "example@gmail.com",
+        $password: "Uppercase, lowercase, number, special character",
+        $date_of_birth: "yyyy-mm-dd",
         avatar: "avatar.jpg"
       },
       SignIn: {
-        $email: "nguyenvana@gmail.com",
+        $email: "example@gmail.com",
         $password: "Abc123!@#",
       },
       ResetPassword: {
-        $email: "nguyenvana@gmail.com",
+        $email: "example@gmail.com",
       },
       Post: {
         $title: "Hello World!",
         $body: "This is my post",
       },
       Comment: {
-        $content: "This is my comment",
+        $content: "This is example comment",
+      },
+      Follow: {
+        $followed_id: "2r18541285412654",
+      },
+      Chat: {
+        $conversation_id: "1324664821581",
+        $content: "This is example chat",
       },
     },
   },
 };
 const options = {
-  multipath: true,
+  multipart: true,
 };
 
 swaggerAutogen(outputFile, endpointsFiles, doc, options);
