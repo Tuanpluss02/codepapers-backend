@@ -124,7 +124,7 @@
                 "properties": {
                   "token": {
                     "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
                   }
                 },
                 "required": [
@@ -142,7 +142,7 @@
           "Auth"
         ],
         "summary": "Get new access token",
-        "description": "Endpoint to refresh token.",
+        "description": "Endpoint to get new access token.",
         "responses": {
           "default": {
             "description": ""
@@ -155,14 +155,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "token": {
+                  "refreshToken": {
                     "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
                   }
-                },
-                "required": [
-                  "token"
-                ]
+                }
               }
             }
           }

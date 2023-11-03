@@ -4,7 +4,7 @@ const commentQuery = require("../modules/comment.query.js");
 const date = require("../utils/convertDate");
 
 exports.commentController = {
-  postComment: async (req, res) => {
+  postComment: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Post comment in post'
@@ -56,13 +56,12 @@ exports.commentController = {
         message: "Post comment successful",
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Post comment failed",
-      });
+      error.message = "Post comment failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getCommentInPost: async (req, res) => {
+  getCommentInPost: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Get all comments in post'
@@ -95,13 +94,12 @@ exports.commentController = {
         result,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get comment failed",
-      });
+      error.message = "Get comments in post failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getCommentById: async (req, res) => {
+  getCommentById: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Get detail one comment'
@@ -135,13 +133,12 @@ exports.commentController = {
         result,
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Get comment failed",
-      });
+      error.message = "Get detail comment failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  reactComment: async (req, res) => {
+  reactComment: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Like or unlike comment'
@@ -197,13 +194,12 @@ exports.commentController = {
         });
       }
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "React comment failed",
-      });
+      error.message = "Like or unlike comment failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  updateComment: async (req, res) => {
+  updateComment: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Update comment'
@@ -246,13 +242,12 @@ exports.commentController = {
         message: "Update comment successful",
       });
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Update comment failed",
-      });
+      error.message = "Update comment failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  deleteComment: async (req, res) => {
+  deleteComment: async (req, res, next) => {
     /*
       #swagger.tags = ['Comment']
       #swagger.summary = 'Delete comment'
@@ -294,10 +289,9 @@ exports.commentController = {
         });
       }
     } catch (error) {
-      console.error(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Delete comment failed",
-      });
+      error.message = "Delete comment failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
 };

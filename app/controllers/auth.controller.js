@@ -17,7 +17,7 @@ const { getPayloadFromToken } = require("../services/auth.service.js");
 require("dotenv").config();
 
 exports.authController = {
-  login: async (req, res) => {
+  login: async (req, res, next) => {
     /* #swagger.tags = ['Auth'] 
     #swagger.description = 'Endpoint to login.'
     #swagger.summary = 'Login'
@@ -31,18 +31,24 @@ exports.authController = {
         }
       }
     } */
-    const accessToken = req.accessToken;
-    const refreshToken = req.refreshToken;
-    const user = req.user;
-    return res.status(HTTPStatusCode.OK).json({
-      message: "Login successful",
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      user: user,
-    });
+    try {
+      const accessToken = req.accessToken;
+      const refreshToken = req.refreshToken;
+      const user = req.user;
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Login successful",
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        user: user,
+      });
+    } catch (error) {
+      error.message = "Login failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
+    }
   },
 
-  register: async (req, res) => {
+  register: async (req, res, next) => {
     /*#swagger.tags = ['Auth']
     #swagger.description = 'Endpoint to register account.'
     #swagger.summary = 'Register'
@@ -87,60 +93,66 @@ exports.authController = {
       }
     }
   */
-    let { email, full_name, password, date_of_birth } = req.body;
-    const avatar = req.file;
-    if (!avatar) {
-      return res.status(HTTPStatusCode.BadRequest).json({
-        message: "Avatar is required",
-      });
-    }
-    const profile_avatar = avatar.path;
-    const relativePath = profile_avatar.split("public")[1];
-    const profile_avatar_res = relativePath.replace(/\\/g, "/");
     try {
-      const userList = await userQuery.getUsers(email);
-      if (userList.length > 0) {
+      let { email, full_name, password, date_of_birth } = req.body;
+      const avatar = req.file;
+      if (!avatar) {
         return res.status(HTTPStatusCode.BadRequest).json({
-          message: "Email already exists",
+          message: "Avatar is required",
         });
       }
-      const user_id = req.body.user_id;
-      const hashedPassword = await authServices.hashPassword(password);
-      password = hashedPassword;
-      const createUser = await userQuery.createUser(
-        user_id,
-        full_name,
-        email,
-        password,
-        profile_avatar_res,
-        date_of_birth
-      );
-      if (!createUser) {
+      const profile_avatar = avatar.path;
+      const relativePath = profile_avatar.split("public")[1];
+      const profile_avatar_res = relativePath.replace(/\\/g, "/");
+      try {
+        const userList = await userQuery.getUsers(email);
+        if (userList.length > 0) {
+          return res.status(HTTPStatusCode.BadRequest).json({
+            message: "Email already exists",
+          });
+        }
+        const user_id = req.body.user_id;
+        const hashedPassword = await authServices.hashPassword(password);
+        password = hashedPassword;
+        const createUser = await userQuery.createUser(
+          user_id,
+          full_name,
+          email,
+          password,
+          profile_avatar_res,
+          date_of_birth
+        );
+        if (!createUser) {
+          return res.status(HTTPStatusCode.InternalServerError).json({
+            message: "Register failed",
+          });
+        }
+        const payloadAccessToken = {
+          _id: user_id,
+        };
+        const accessToken = authServices.generateToken(
+          payloadAccessToken,
+          process.env.ACCESS_TOKEN_SECRET,
+          process.env.ACCESS_TOKEN_LIFE.toString()
+        );
+        return res.status(HTTPStatusCode.OK).json({
+          message: "Register successful",
+          accessToken,
+        });
+      } catch (error) {
+        console.log(error);
         return res.status(HTTPStatusCode.InternalServerError).json({
           message: "Register failed",
         });
       }
-      const payloadAccessToken = {
-        _id: user_id,
-      };
-      const accessToken = authServices.generateToken(
-        payloadAccessToken,
-        process.env.ACCESS_TOKEN_SECRET,
-        process.env.ACCESS_TOKEN_LIFE.toString()
-      );
-      return res.status(HTTPStatusCode.OK).json({
-        message: "Register successful",
-        accessToken,
-      });
     } catch (error) {
-      console.log(error);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Register failed",
-      });
+      error.message = "Register failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
 
-  verify: (req, res) => {
+  verify: (req, res, next) => {
     /* #swagger.tags = ['Auth'] 
     #swagger.summary = 'Verify user'
     #swagger.description = 'Endpoint to verify token.'
@@ -153,7 +165,7 @@ exports.authController = {
             properties: {
               token: {
                 type: "string",
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
               }
             },
             required: [ "token" ]
@@ -162,80 +174,93 @@ exports.authController = {
       }
     }
     */
-    const token = req.body.token;
-    const payload = authServices.verifyToken(
-      token,
-      process.env.ACCESS_TOKEN_SECRET
-    );
-    if (!payload) {
-      return res.status(HTTPStatusCode.Unauthorized).send("Invalid token");
+    try {
+      const token = req.body.token;
+      const payload = authServices.verifyToken(
+        token,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      if (!payload) {
+        return res.status(HTTPStatusCode.Unauthorized).send("Invalid token");
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Verify successful",
+      });
+    } catch (error) {
+      error.message = "Verify failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
-    return res.status(HTTPStatusCode.OK).json({
-      message: "Verify successful",
-    });
   },
 
-  refresh: async (req, res) => {
-    /* #swagger.tags = ['Auth']
-        #swagger.summary = 'Get new access token'
-        #swagger.description = 'Endpoint to refresh token.'
-        #swagger.requestBody = {
-          required: true,
-          content: {
-            "multipart/form-data": {
-              schema: {
-                type: "object",
-                properties: {
-                  token: {
-                    type: "string",
-                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI5MjA2YmIyYS1mYzlkLTQxYmMtYjhhZS1lYjMzZGZkMTY1NWMiLCJpYXQiOjE2OTg5NDc4NjQsImV4cCI6MTY5OTAzNDI2NH0.-iuVnSARj73kVfvPEIDstTERMP0VueK3QTDZbIAc8Oc"
-                  }
-                },
-                required: [ "token" ]
+  refresh: async (req, res, next) => {
+    /*
+      #swagger.tags = ['Auth']
+      #swagger.summary = 'Get new access token'
+      #swagger.description = 'Endpoint to get new access token.'
+      #swagger.requestBody = {
+        required: true,
+        "content": {
+          "multipart/form-data": {
+            schema: {
+              type: "object",
+              properties: {
+                "refreshToken": {
+                  type: "string",
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
               }
             }
           }
         }
+      }
     */
-    const refreshToken = req.body.refreshToken;
-    const user_id = getPayloadFromToken(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    )._id;
-    const blacklistToken = await userQuery.getBlacklistToken(user_id);
+    try {
+      const refreshToken = req.body.refreshToken;
+      const user_id = getPayloadFromToken(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      )._id;
+      const blacklistToken = await userQuery.getBlacklistToken(user_id);
 
-    if (blacklistToken.includes(refreshToken)) {
-      return res
-        .status(HTTPStatusCode.Unauthorized)
-        .send("Refresh token is blacklisted");
-    }
+      if (blacklistToken.includes(refreshToken)) {
+        return res
+          .status(HTTPStatusCode.Unauthorized)
+          .send("Refresh token is blacklisted");
+      }
 
-    const payload = authServices.verifyToken(
-      refreshToken,
-      process.env.REFRESH_TOKEN_SECRET
-    );
-    if (!payload) {
-      return res
-        .status(HTTPStatusCode.Unauthorized)
-        .send("Invalid refresh token");
+      const payload = authServices.verifyToken(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+      if (!payload) {
+        return res
+          .status(HTTPStatusCode.Unauthorized)
+          .send("Invalid refresh token");
+      }
+      delete payload.exp;
+      const accessToken = authServices.generateToken(
+        payload,
+        process.env.ACCESS_TOKEN_SECRET,
+        process.env.ACCESS_TOKEN_LIFE.toString()
+      );
+      if (!accessToken) {
+        return res
+          .status(HTTPStatusCode.Unauthorized)
+          .send("Invalid refresh token");
+      }
+      return res.status(HTTPStatusCode.OK).json({
+        message: "Refresh token successful",
+        accessToken: accessToken,
+      });
+    } catch (error) {
+      error.message = "Invalid refresh token";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
-    const accessToken = authServices.generateToken(
-      payload,
-      process.env.ACCESS_TOKEN_SECRET,
-      process.env.ACCESS_TOKEN_LIFE.toString()
-    );
-    if (!accessToken) {
-      return res
-        .status(HTTPStatusCode.Unauthorized)
-        .send("Invalid refresh token");
-    }
-    return res.status(HTTPStatusCode.OK).json({
-      message: "Refresh token successful",
-      accessToken: accessToken,
-    });
   },
 
-  logout: async (req, res) => {
+  logout: async (req, res, next) => {
     /*
       #swagger.tags = ['Auth']
       #swagger.summary = 'Logout'
@@ -277,14 +302,13 @@ exports.authController = {
         message: "Logout successful",
       });
     } catch (err) {
-      console.log(err);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Logout failed",
-      });
+      err.message = "Logout failed";
+      err.status = HTTPStatusCode.InternalServerError;
+      next(err);
     }
   },
 
-  getTokenReset: async (req, res) => {
+  getTokenReset: async (req, res, next) => {
     /*
       #swagger.tags = ['Auth']
       #swagger.summary = 'Get token reset password'
@@ -335,7 +359,7 @@ exports.authController = {
           subject: "Reset password",
           html:
             `<h1>Reset password</h1>` +
-            `<p>Click <a href="${http}://${host}/auth/reset/${token}">here</a> to reset your password</p>` + 
+            `<p>Click <a href="${http}://${host}/auth/reset/${token}">here</a> to reset your password</p>` +
             `<p>Or this is your token: ${token}</p>`,
         };
         transporter.sendMail(data, (err, info) => {
@@ -350,14 +374,13 @@ exports.authController = {
         });
       });
     } catch (err) {
-      console.log(err);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Server error",
-      });
+      err.message = "Get token reset password failed";
+      err.status = HTTPStatusCode.InternalServerError;
+      next(err);
     }
   },
 
-  resetPassword: async (req, res) => {
+  resetPassword: async (req, res, next) => {
     /* 
       #swagger.tags = ['Auth']
       #swagger.summary = 'Reset password'
@@ -408,10 +431,9 @@ exports.authController = {
         message: "Reset password successful",
       });
     } catch (err) {
-      console.log(err);
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: "Server error",
-      });
+      err.message = "Reset password failed";
+      err.status = HTTPStatusCode.InternalServerError;
+      next(err);
     }
   },
 };

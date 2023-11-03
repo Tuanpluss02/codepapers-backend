@@ -42,3 +42,15 @@ app.listen(3000, () => {
     "✨ Server is listening on port 3000. Go to http://localhost:3000/docs to see API document"
   );
 });
+
+app.use((err, req, res, next) => {
+  console.error(err.message);
+  res
+    .status(err.status)
+    .json({
+      message:
+        err.message,
+        bug: "Something broke! Broke ở đâu còn đâu mới nói 🤡",
+    });
+  next();
+});

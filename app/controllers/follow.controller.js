@@ -2,7 +2,7 @@ const HTTPStatusCode = new (require("../common/constants/HttpStatusCode.js"))();
 const followQuery = require("../modules/follow.query");
 
 exports.followController = {
-  getFollowers: async (req, res) => {
+  getFollowers: async (req, res, next) => {
     /*
       #swagger.tags = ['Follow']
       #swagger.summary = 'Get all followers'
@@ -24,12 +24,12 @@ exports.followController = {
         followers: listFolowers,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Get followers failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  getFollowings: async (req, res) => {
+  getFollowings: async (req, res, next) => {
     /*
       #swagger.tags = ['Follow']
       #swagger.summary = 'Get all following users'
@@ -51,12 +51,12 @@ exports.followController = {
         folowing: listFolowing,
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Get following users failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
-  follow: async (req, res) => {
+  follow: async (req, res, next) => {
     /*
       #swagger.tags = ['Follow']
       #swagger.summary = 'Follow a user'
@@ -102,13 +102,13 @@ exports.followController = {
         message: "Follow success",
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Follow failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
 
-  unfollow: async (req, res) => {
+  unfollow: async (req, res, next) => {
     /*
       #swagger.tags = ['Follow']
       #swagger.summary = 'Unfollow a user'
@@ -149,9 +149,9 @@ exports.followController = {
         message: "Unfollow success",
       });
     } catch (error) {
-      return res.status(HTTPStatusCode.InternalServerError).json({
-        message: error.message,
-      });
+      error.message = "Unfollow failed";
+      error.status = HTTPStatusCode.InternalServerError;
+      next(error);
     }
   },
 };
