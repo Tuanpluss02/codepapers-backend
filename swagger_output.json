@@ -1234,7 +1234,7 @@
         ]
       }
     },
-    "/chat/getMessages": {
+    "/chat/getMessages/{id}": {
       "get": {
         "tags": [
           "Chat"
@@ -1242,6 +1242,15 @@
         "summary": "Get all messages in conversation",
         "description": "Endpoint to get messages",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Conversation id"
+          },
           {
             "name": "authorization",
             "in": "header",
@@ -1261,24 +1270,7 @@
           {
             "bearerAuth": []
           }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "conversation_id": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "conversation_id"
-                ]
-              }
-            }
-          }
-        }
+        ]
       }
     }
   },

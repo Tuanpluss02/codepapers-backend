@@ -36,8 +36,11 @@ exports.chatController = {
     */
     try {
       const { conversation_id } = req.body;
-      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
-      if (isJoined) { 
+      const isJoined = await chatQuery.checkUserInConversation(
+        conversation_id,
+        req.user.user_id
+      );
+      if (isJoined) {
         return res.status(HTTPStatusCode.BadRequest).json({
           message: "User already in conversation",
         });
@@ -92,7 +95,7 @@ exports.chatController = {
       }
     */
     try {
-      const { conversation_name} = req.body;
+      const { conversation_name } = req.body;
       const conversation_id = uuidv4();
       const participant_id = uuidv4();
       const created_at = getNow();
@@ -101,7 +104,11 @@ exports.chatController = {
         conversation_name,
         created_at
       );
-      await chatQuery.joinConversation(participant_id, conversation_id, req.user.user_id);
+      await chatQuery.joinConversation(
+        participant_id,
+        conversation_id,
+        req.user.user_id
+      );
       return res.status(HTTPStatusCode.OK).json({
         message: "Create conversation successfully",
         data: result,
@@ -144,8 +151,11 @@ exports.chatController = {
     */
     try {
       const { conversation_id } = req.body;
-      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
-      if (!isJoined) { 
+      const isJoined = await chatQuery.checkUserInConversation(
+        conversation_id,
+        req.user.user_id
+      );
+      if (!isJoined) {
         return res.status(HTTPStatusCode.BadRequest).json({
           message: "User not in conversation",
         });
@@ -199,8 +209,11 @@ exports.chatController = {
     */
     try {
       const { conversation_id, content } = req.body;
-      const isJoined = await chatQuery.checkUserInConversation(conversation_id, req.user.user_id);
-      if (!isJoined) { 
+      const isJoined = await chatQuery.checkUserInConversation(
+        conversation_id,
+        req.user.user_id
+      );
+      if (!isJoined) {
         return res.status(HTTPStatusCode.BadRequest).json({
           message: "User not in conversation",
         });
@@ -266,20 +279,11 @@ exports.chatController = {
         required: false,
         type: 'string',
       }
-      #swagger.requestBody = {
-        "content": {
-          "multipart/form-data": {
-            schema: {
-              type: "object",
-              properties: {
-                "conversation_id": {
-                  type: "string"
-                }
-              },
-              required: ["conversation_id"]
-            }
-          }
-        }
+      #swagger.parameters['id'] = {
+        in: 'path',
+        description: 'Conversation id',
+        required: true,
+        type: 'string',
       }
     */
     try {
@@ -292,7 +296,7 @@ exports.chatController = {
     } catch (error) {
       error.message = "Get messages failed";
       error.status = HTTPStatusCode.InternalServerError;
-      next(error)
+      next(error);
     }
   },
 };
