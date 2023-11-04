@@ -283,7 +283,7 @@ exports.chatController = {
       }
     */
     try {
-      const { conversation_id } = req.body;
+      const conversation_id = req.params.id;
       const result = await chatQuery.getMessages(conversation_id);
       return res.status(HTTPStatusCode.OK).json({
         message: "Get messages successfully",

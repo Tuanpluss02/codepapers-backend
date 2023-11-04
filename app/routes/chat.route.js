@@ -30,7 +30,7 @@ chatRouter.get(
 );
 
 chatRouter.get(
-  "/chat/getMessages",
+  "/chat/getMessages/:id",
   authenticateAccessToken,
   chatController.getMessages
 );

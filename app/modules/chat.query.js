@@ -1,13 +1,21 @@
 const db = require("../services/database.service.js");
 
 exports.getConversations = async (user_id) => {
-  const sql =
-    "SELECT c.conversation_id, c.conversation_name, m.content AS last_message, m.sent_at \
+  // const sql =
+  //   "SELECT c.conversation_id, c.conversation_name, m.content AS last_message, m.sent_at \
+  //   FROM conversations c \
+  //   LEFT JOIN messages m ON c.conversation_id = m.conversation_id \
+  //   JOIN participants p ON c.conversation_id = p.conversation_id \
+  //   WHERE p.user_id = ?  \
+  //   ORDER BY m.sent_at ASC;";
+  const sql = "SELECT c.conversation_id, c.conversation_name, m.content AS last_message, m.sent_at \
     FROM conversations c \
     LEFT JOIN messages m ON c.conversation_id = m.conversation_id \
     JOIN participants p ON c.conversation_id = p.conversation_id \
-    WHERE p.user_id = ?  \
-    ORDER BY m.sent_at ASC;";
+    WHERE p.user_id = ? AND m.sent_at = ( \
+    SELECT MAX(sent_at) \
+    FROM messages ) \
+    ORDER BY m.sent_at ASC;"
   const values = [user_id];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
