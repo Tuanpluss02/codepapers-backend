@@ -280,7 +280,6 @@ exports.authController = {
         access_token,
         process.env.ACCESS_TOKEN_SECRET
       )._id;
-      console.log(id);
       const user = await userQuery.getUserById(id);
       if (!user) {
         return res
@@ -302,6 +301,7 @@ exports.authController = {
         message: "Logout successful",
       });
     } catch (err) {
+      console.log(err);
       err.message = "Logout failed";
       err.status = HTTPStatusCode.InternalServerError;
       next(err);
