@@ -1,8 +1,8 @@
 -- Lấy thông tin người dùng dựa trên email
 SELECT * FROM users WHERE email = ?;
 
--- Lấy thông tin người dùng dựa trên user_id, giới hạn 1 kết quả
-SELECT * FROM users WHERE user_id = ? LIMIT 1;
+-- Lấy thông tin người dùng dựa trên user_id
+SELECT * FROM users WHERE user_id = ?;
 
 -- Tạo người dùng mới
 INSERT INTO users (user_id, full_name, email, password, profile_avatar, date_of_birth) 

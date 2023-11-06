@@ -48,3 +48,61 @@ DELETE FROM messages WHERE message_id = ? AND sender_id = ?;
 
 -- Xóa cuộc trò chuyện
 DELETE FROM conversations WHERE conversation_id = ?;
+
+
+
+SELECT c.conversation_id, c.conversation_name, m.content AS last_message, m.sent_at
+FROM conversations c
+JOIN participants p ON c.conversation_id = p.conversation_id
+LEFT JOIN messages m ON c.conversation_id = m.conversation_id
+WHERE p.user_id = 'eed9d596-a166-446f-8a76-190ad4880004' AND m.sent_at = (
+  SELECT MAX(sent_at)
+  FROM messages
+)
+ORDER BY m.sent_at ASC;
+SELECT
+    c.conversation_id,
+    c.conversation_name,
+    IFNULL(m.content, '') AS last_message,
+    IFNULL(m.sent_at, '') AS last_sent_at
+FROM
+    conversations c
+LEFT JOIN
+    messages m ON c.conversation_id = m.conversation_id
+LEFT JOIN
+    participants p ON c.conversation_id = p.conversation_id
+WHERE
+    p.user_id = 'user_id'
+    AND (
+        m.sent_at IS NULL
+        OR m.sent_at = (
+            SELECT
+                MAX(sent_at)
+            FROM
+                messages
+            WHERE
+                conversation_id = c.conversation_id
+        )
+    );
+    
+SELECT
+    c.conversation_id,
+    c.conversation_name,
+    m.content AS last_message,
+    m.sent_at AS last_sent_at
+FROM
+    conversations c
+LEFT JOIN
+    messages m ON c.conversation_id = m.conversation_id
+JOIN
+    participants p ON c.conversation_id = p.conversation_id
+WHERE
+    p.user_id = 'eed9d596-a166-446f-8a76-190ad4880004'
+    AND m.sent_at = (
+        SELECT
+            MAX(sent_at)
+        FROM
+            messages
+        WHERE
+            conversation_id = c.conversation_id
+    );
