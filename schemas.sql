@@ -244,10 +244,6 @@ alter table user_comment
     add constraint post_id_UNIQUE
         unique (post_id, user_id, comment_id);
 
--- alter table user_comment
---     add constraint user_id_UNIQUE
---         unique (user_id);
-
 alter table user_comment
     add constraint user_comment_comments_comment_id_fk
         foreign key (comment_id) references comments (comment_id);

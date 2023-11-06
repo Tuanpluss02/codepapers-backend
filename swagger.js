@@ -18,8 +18,13 @@ const doc = {
   servers: [
     {
       url: "http://localhost:3000",
+      
     },
+    {
+      url: "https://glowing-xylophone-6q9pwww977h449p-3000.app.github.dev/",
+    }
   ],
+
   tags: [
     {
       name: "Auth",
