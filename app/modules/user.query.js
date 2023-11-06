@@ -109,12 +109,12 @@ exports.updateBlacklistToken = async (user_id, access_token, refresh_token) => {
   const sql2 = "UPDATE users SET refresh_token = NULL WHERE user_id = ?";
   const values3 = [user_id];
   return new Promise((resolve, reject) => { 
-    db.query(sql1, values1, (err, result) => {
+    db.query(sql1, values1, (err) => {
       if (err) {
         console.error(err);
         reject(err);
       } else {
-        db.query(sql1, values2, (err, result) => {
+        db.query(sql1, values2, (err) => {
           if (err) {
             console.error(err);
             reject(err);
