@@ -111,6 +111,7 @@ exports.chatController = {
       );
       return res.status(HTTPStatusCode.OK).json({
         message: "Create conversation successfully",
+        conversation_id: conversation_id,
         data: result,
       });
     } catch (error) {
