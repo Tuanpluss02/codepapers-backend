@@ -165,7 +165,7 @@ exports.updateResetPasswordExpires = async (user_id, resetPasswordExpires) => {
 exports.getUserByResetPasswordToken = async (resetPasswordToken) => {
   const sql =
     "SELECT * FROM users WHERE reset_password_token = ? and reset_password_expires >= ? LIMIT 1";
-  const values = [resetPasswordToken, Date.now()];
+  const values = [resetPasswordToken, require('../utils/convertDate').getNow()];
   const result = await new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
       if (err) {

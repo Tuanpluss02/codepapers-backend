@@ -345,10 +345,7 @@ exports.authController = {
           });
         }
         await userQuery.updateResetPasswordToken(user.data[0].user_id, token);
-        const expireTime = new Date(Date.now() + 300000)
-          .toISOString()
-          .slice(0, 19)
-          .replace("T", " ");
+        const expireTime = (require('../utils/convertDate').timestampToDateTime(Date.now() + 300000))
         await userQuery.updateResetPasswordExpires(
           user.data[0].user_id,
           expireTime
